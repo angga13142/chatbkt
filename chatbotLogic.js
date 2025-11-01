@@ -167,15 +167,18 @@ class ChatbotLogic {
   /**
    * Show cart contents
    */
-  showCart(customerId) {
-    const cart = this.sessionManager.getCart(customerId);
+  /**
+   * Show cart contents
+   */
+  async showCart(customerId) {
+    const cart = await this.sessionManager.getCart(customerId);
 
     if (cart.length === 0) {
       return UIMessages.emptyCart();
     }
 
     const total = cart.reduce((sum, item) => sum + item.price, 0);
-    this.sessionManager.setStep(customerId, "checkout");
+    await this.sessionManager.setStep(customerId, "checkout");
 
     return UIMessages.cartView(cart, total);
   }
