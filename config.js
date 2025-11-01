@@ -110,9 +110,31 @@ function formatProductList() {
   return message;
 }
 
+/**
+ * Decrement stock for a product
+ */
+function decrementStock(productId) {
+  const product = getProductById(productId);
+  if (product && product.stock > 0) {
+    product.stock--;
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Check if product is in stock
+ */
+function isInStock(productId) {
+  const product = getProductById(productId);
+  return product && product.stock > 0;
+}
+
 module.exports = {
   products,
   getAllProducts,
   getProductById,
   formatProductList,
+  decrementStock,
+  isInStock,
 };

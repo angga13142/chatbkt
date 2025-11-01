@@ -225,6 +225,27 @@ class ChatbotLogic {
     }
 
     const cart = this.sessionManager.getCart(customerId);
+
+    // Check stock availability
+    const { isInStock } = require("./config");
+    const outOfStockItems = cart.filter((item) => !isInStock(item.id));
+
+    if (outOfStockItems.length > 0) {
+      const itemNames = outOfStockItems.map((item) => item.name).join(", ");
+      this.logger.logSecurity(
+        customerId,
+        "out_of_stock_checkout",
+        "stock_unavailable",
+        {
+          items: outOfStockItems.map((i) => i.id),
+        }
+      );
+      return {
+        message: `❌ *Stok Habis*\n\nMaaf, produk berikut tidak tersedia:\n${itemNames}\n\nSilakan hapus dari keranjang dengan ketik *clear* dan pilih produk lain.`,
+        qrisData: null,
+      };
+    }
+
     const totalUSD = cart.reduce((sum, item) => sum + item.price, 0);
     const orderId = `ORD-${Date.now()}-${customerId.slice(-4)}`;
 
@@ -318,6 +339,13 @@ class ChatbotLogic {
       products: cart.map((p) => p.name),
     });
     this.logger.logDelivery(targetCustomerId, approveOrderId, cart);
+
+    // Decrement stock for delivered products
+    const { decrementStock } = require("./config");
+    cart.forEach((item) => {
+      decrementStock(item.id);
+      console.log(`📦 Stock decremented for ${item.id}`);
+    });
 
     this.sessionManager.clearCart(targetCustomerId);
     this.sessionManager.setStep(targetCustomerId, "menu");
