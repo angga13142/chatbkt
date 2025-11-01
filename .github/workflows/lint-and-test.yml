@@ -1,0 +1,96 @@
+name: Lint and Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.js'
+      - 'package.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.js'
+      - 'package.json'
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Syntax validation
+        run: |
+          echo "🔍 Validating all JavaScript files..."
+          find . -name "*.js" -not -path "./node_modules/*" -not -path "./.wwebjs_*/*" | while read file; do
+            echo "Checking: $file"
+            node --check "$file"
+          done
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check for sensitive data
+        run: |
+          echo "🔐 Scanning for sensitive data..."
+          
+          # Check for API keys patterns
+          if grep -rE "(api[_-]?key|secret[_-]?key|access[_-]?token).*(=|:).*(sk_|xnd_|pk_)" --include="*.js" --exclude-dir=node_modules .; then
+            echo "❌ Potential API key exposure detected!"
+            exit 1
+          fi
+          
+          # Check .env is not committed (should only have .env.example)
+          if [ -f .env ] && git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "❌ .env file is tracked by git!"
+            exit 1
+          fi
+          
+          echo "✅ No sensitive data found"
+
+      - name: Verify environment template
+        run: |
+          echo "📋 Checking .env.example completeness..."
+          
+          # Extract required env vars from code
+          grep -rho "process\.env\.[A-Z_]*" --include="*.js" --exclude-dir=node_modules . | \
+            sed 's/process\.env\.//' | sort -u > /tmp/required_vars.txt
+          
+          echo "Required environment variables:"
+          cat /tmp/required_vars.txt
+          
+          # Check if .env.example exists
+          if [ ! -f .env.example ]; then
+            echo "⚠️  Warning: .env.example not found"
+          else
+            echo "✅ .env.example found"
+          fi
+
+      - name: Check documentation
+        run: |
+          echo "📚 Verifying documentation..."
+          
+          required_docs=(
+            "README.md"
+            "ARCHITECTURE.md"
+            "DEPLOYMENT.md"
+            ".github/copilot-instructions.md"
+          )
+          
+          for doc in "${required_docs[@]}"; do
+            if [ -f "$doc" ]; then
+              echo "✅ $doc exists"
+            else
+              echo "⚠️  $doc missing"
+            fi
+          done
