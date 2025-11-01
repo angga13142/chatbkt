@@ -156,6 +156,7 @@ pm2 status
 ```
 
 You should see:
+
 ```
 ┌─────┬──────────────┬─────────────┬─────────┬─────────┬──────────┐
 │ id  │ name         │ mode        │ ↺       │ status  │ cpu      │
@@ -379,11 +380,13 @@ sudo systemctl restart networking
 ### Bot Disconnects Frequently
 
 This can happen due to:
+
 - Unstable internet connection
 - WhatsApp detecting automation (rate limiting)
 - VPS provider blocking WhatsApp traffic
 
 Solutions:
+
 ```bash
 # 1. Restart bot
 pm2 restart whatsapp-bot
@@ -436,6 +439,7 @@ puppeteer: {
 ```
 
 Expected resource usage:
+
 - **Memory**: 300-500 MB (idle), 500-800 MB (active)
 - **CPU**: 5-15% (idle), 30-60% (during active conversations)
 - **Disk**: ~500 MB for application + ~200 MB for session data
@@ -443,16 +447,19 @@ Expected resource usage:
 ### Additional Optimizations
 
 1. **Limit PM2 Memory**
+
 ```bash
 pm2 start index.js --name whatsapp-bot --max-memory-restart 800M
 ```
 
 2. **Enable PM2 Auto-restart on Crash**
+
 ```bash
 pm2 start index.js --name whatsapp-bot --exp-backoff-restart-delay=100
 ```
 
 3. **Setup Log Rotation**
+
 ```bash
 pm2 install pm2-logrotate
 pm2 set pm2-logrotate:max_size 10M
@@ -490,8 +497,202 @@ If you need to handle more customers:
 
 1. **Upgrade VPS**: 2 vCPU, 4GB RAM
 2. **Multiple Bots**: Run multiple WhatsApp numbers
-3. **Database**: Add Redis for session storage
+3. **Database**: Add Redis for session storage (see Redis Setup below)
 4. **Load Balancer**: Distribute across multiple VPS
+
+## Redis Setup (Session Persistence)
+
+Redis enables session persistence across bot restarts and reduces memory usage.
+
+### Install Redis
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y redis-server
+
+# Start Redis service
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# Verify Redis is running
+redis-cli ping  # Should return: PONG
+```
+
+### Configure Redis for Production
+
+Edit Redis configuration:
+
+```bash
+sudo nano /etc/redis/redis.conf
+```
+
+Recommended settings for VPS:
+
+```conf
+# Bind to localhost only (security)
+bind 127.0.0.1
+
+# Set password (replace YOUR_STRONG_PASSWORD)
+requirepass YOUR_STRONG_PASSWORD
+
+# Memory limit (adjust based on VPS RAM)
+maxmemory 256mb
+maxmemory-policy allkeys-lru
+
+# Enable AOF persistence
+appendonly yes
+appendfsync everysec
+
+# Disable RDB snapshots (AOF is enough)
+save ""
+```
+
+Restart Redis:
+
+```bash
+sudo systemctl restart redis-server
+```
+
+### Configure Bot to Use Redis
+
+Edit `.env` file:
+
+```env
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=YOUR_STRONG_PASSWORD
+SESSION_TTL=1800  # 30 minutes
+```
+
+### Verify Redis Connection
+
+```bash
+# Test Redis connection
+redis-cli -a YOUR_STRONG_PASSWORD ping
+
+# Monitor Redis in real-time
+redis-cli -a YOUR_STRONG_PASSWORD monitor
+
+# Check memory usage
+redis-cli -a YOUR_STRONG_PASSWORD info memory
+```
+
+### Redis Benefits
+
+- ✅ Sessions persist across bot restarts
+- ✅ Reduced memory usage (TTL auto-expires old sessions)
+- ✅ Better performance for multiple concurrent users
+- ✅ Horizontal scaling ready (multiple bot instances can share Redis)
+
+## Webhook Setup (Auto Payment Verification)
+
+Webhook enables automatic product delivery when payment is confirmed, eliminating manual admin approval.
+
+### Requirements
+
+- Public domain or IP with SSL certificate (for production)
+- Port 3000 accessible (or configure `WEBHOOK_PORT`)
+
+### Configure Webhook
+
+1. **Set webhook URL in `.env`:**
+
+```env
+WEBHOOK_URL=https://yourdomain.com
+WEBHOOK_PORT=3000
+XENDIT_WEBHOOK_TOKEN=your_webhook_token_from_xendit
+```
+
+2. **Setup Nginx reverse proxy (recommended):**
+
+```bash
+# Install Nginx
+sudo apt install -y nginx certbot python3-certbot-nginx
+
+# Create Nginx config
+sudo nano /etc/nginx/sites-available/webhook
+```
+
+Add this configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location /webhook/xendit {
+        proxy_pass http://localhost:3000/webhook/xendit;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /health {
+        proxy_pass http://localhost:3000/health;
+    }
+}
+```
+
+Enable site and get SSL:
+
+```bash
+# Enable site
+sudo ln -s /etc/nginx/sites-available/webhook /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+# Get SSL certificate (free from Let's Encrypt)
+sudo certbot --nginx -d yourdomain.com
+```
+
+3. **Configure Xendit webhook in dashboard:**
+
+- Go to: https://dashboard.xendit.co/settings/developers#webhooks
+- Add webhook URL: `https://yourdomain.com/webhook/xendit`
+- Copy webhook verification token to `XENDIT_WEBHOOK_TOKEN` in `.env`
+- Select events: Invoice Paid, E-Wallet Paid, Virtual Account Paid
+
+4. **Test webhook:**
+
+```bash
+# Check health endpoint
+curl https://yourdomain.com/health
+
+# Should return:
+# {"status":"ok","timestamp":"...","redis":"connected","whatsapp":"connected"}
+```
+
+### Webhook Security
+
+The webhook server automatically:
+
+- ✅ Verifies Xendit signature (`X-Callback-Token` header)
+- ✅ Validates payment status before delivery
+- ✅ Logs all webhook events to `logs/transactions.json`
+- ✅ Prevents duplicate deliveries
+
+### Webhook Flow
+
+1. Customer pays via Xendit (QRIS/E-Wallet/VA)
+2. Xendit sends webhook to your server
+3. Server verifies signature and payment status
+4. If PAID/SUCCEEDED → auto-deliver products via WhatsApp
+5. Session updated, cart cleared, transaction logged
+
+### Without Webhook (Manual Mode)
+
+If you don't setup webhook:
+
+- Customer pays → Admin checks Xendit dashboard manually
+- Admin runs `/approve ORDER_ID` command
+- Payment verified via API → Products delivered
+
+Webhook eliminates manual step, enabling 24/7 automated operation.
 
 ## Support
 

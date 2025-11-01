@@ -1,11 +1,45 @@
 /**
  * Session Manager
- * Manages customer sessions and shopping carts
+ * Manages customer sessions and shopping carts with Redis persistence
  */
+
+const redisClient = require("./lib/redisClient");
 
 class SessionManager {
   constructor() {
-    this.sessions = new Map();
+    this.sessions = new Map(); // Fallback in-memory storage
+    this.useRedis = false;
+    this.sessionTTL = parseInt(process.env.SESSION_TTL) || 1800; // 30 minutes default
+  }
+
+  /**
+   * Initialize session manager (connect to Redis if available)
+   */
+  async initialize() {
+    try {
+      const connected = await redisClient.connect();
+      this.useRedis = connected;
+
+      if (this.useRedis) {
+        console.log("✅ SessionManager: Using Redis for persistence");
+      } else {
+        console.log(
+          "⚠️  SessionManager: Using in-memory storage (no persistence)"
+        );
+      }
+    } catch (error) {
+      console.error("❌ SessionManager initialization error:", error.message);
+      this.useRedis = false;
+    }
+  }
+
+  /**
+   * Get session key for Redis
+   * @param {string} customerId
+   * @returns {string}
+   */
+  _getSessionKey(customerId) {
+    return `session:${customerId}`;
   }
 
   /**
@@ -13,9 +47,31 @@ class SessionManager {
    * @param {string} customerId - WhatsApp number
    * @returns {Object} Session object
    */
-  getSession(customerId) {
+  async getSession(customerId) {
+    // Try Redis first
+    if (this.useRedis && redisClient.isReady()) {
+      try {
+        const sessionKey = this._getSessionKey(customerId);
+        const sessionData = await redisClient.getClient().get(sessionKey);
+
+        if (sessionData) {
+          const session = JSON.parse(sessionData);
+          session.lastActivity = Date.now();
+
+          // Update TTL
+          await redisClient.getClient().expire(sessionKey, this.sessionTTL);
+
+          return session;
+        }
+      } catch (error) {
+        console.error("❌ Redis getSession error:", error.message);
+        // Fall through to in-memory
+      }
+    }
+
+    // Fallback to in-memory
     if (!this.sessions.has(customerId)) {
-      this.sessions.set(customerId, {
+      const newSession = {
         customerId,
         cart: [],
         step: "menu",
@@ -27,7 +83,20 @@ class SessionManager {
         paymentMethod: null,
         paymentInvoiceId: null,
         lastActivity: Date.now(),
-      });
+      };
+
+      this.sessions.set(customerId, newSession);
+
+      // Save to Redis if available
+      if (this.useRedis && redisClient.isReady()) {
+        try {
+          await this._saveToRedis(customerId, newSession);
+        } catch (error) {
+          console.error("❌ Redis save error:", error.message);
+        }
+      }
+
+      return newSession;
     }
 
     // Update last activity
@@ -37,22 +106,58 @@ class SessionManager {
   }
 
   /**
+   * Save session to Redis
+   * @param {string} customerId
+   * @param {Object} session
+   */
+  async _saveToRedis(customerId, session) {
+    if (!this.useRedis || !redisClient.isReady()) {
+      return;
+    }
+
+    try {
+      const sessionKey = this._getSessionKey(customerId);
+      await redisClient
+        .getClient()
+        .setEx(sessionKey, this.sessionTTL, JSON.stringify(session));
+    } catch (error) {
+      console.error("❌ Redis _saveToRedis error:", error.message);
+    }
+  }
+
+  /**
+   * Update session in both Redis and memory
+   * @param {string} customerId
+   */
+  async _updateSession(customerId) {
+    const session = this.sessions.get(customerId);
+    if (!session) return;
+
+    session.lastActivity = Date.now();
+
+    // Save to Redis
+    await this._saveToRedis(customerId, session);
+  }
+
+  /**
    * Add item to cart
    * @param {string} customerId
    * @param {Object} product
    */
-  addToCart(customerId, product) {
-    const session = this.getSession(customerId);
+  async addToCart(customerId, product) {
+    const session = await this.getSession(customerId);
     session.cart.push(product);
+    await this._updateSession(customerId);
   }
 
   /**
    * Clear cart
    * @param {string} customerId
    */
-  clearCart(customerId) {
-    const session = this.getSession(customerId);
+  async clearCart(customerId) {
+    const session = await this.getSession(customerId);
     session.cart = [];
+    await this._updateSession(customerId);
   }
 
   /**
@@ -60,8 +165,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {Array} Cart items
    */
-  getCart(customerId) {
-    const session = this.getSession(customerId);
+  async getCart(customerId) {
+    const session = await this.getSession(customerId);
     return session.cart;
   }
 
@@ -70,9 +175,10 @@ class SessionManager {
    * @param {string} customerId
    * @param {string} step
    */
-  setStep(customerId, step) {
-    const session = this.getSession(customerId);
+  async setStep(customerId, step) {
+    const session = await this.getSession(customerId);
     session.step = step;
+    await this._updateSession(customerId);
   }
 
   /**
@@ -80,8 +186,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {string} Current step
    */
-  getStep(customerId) {
-    const session = this.getSession(customerId);
+  async getStep(customerId) {
+    const session = await this.getSession(customerId);
     return session.step;
   }
 
@@ -90,9 +196,10 @@ class SessionManager {
    * @param {string} customerId
    * @param {string} orderId
    */
-  setOrderId(customerId, orderId) {
-    const session = this.getSession(customerId);
+  async setOrderId(customerId, orderId) {
+    const session = await this.getSession(customerId);
     session.orderId = orderId;
+    await this._updateSession(customerId);
   }
 
   /**
@@ -102,11 +209,12 @@ class SessionManager {
    * @param {number} amount
    * @param {string} date
    */
-  setQRISInvoice(customerId, invoiceId, amount, date) {
-    const session = this.getSession(customerId);
+  async setQRISInvoice(customerId, invoiceId, amount, date) {
+    const session = await this.getSession(customerId);
     session.qrisInvoiceId = invoiceId;
     session.qrisAmount = amount;
     session.qrisDate = date;
+    await this._updateSession(customerId);
   }
 
   /**
@@ -114,8 +222,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {string} Order ID
    */
-  getOrderId(customerId) {
-    const session = this.getSession(customerId);
+  async getOrderId(customerId) {
+    const session = await this.getSession(customerId);
     return session.orderId;
   }
 
@@ -124,8 +232,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {Object} QRIS data
    */
-  getQRISInvoice(customerId) {
-    const session = this.getSession(customerId);
+  async getQRISInvoice(customerId) {
+    const session = await this.getSession(customerId);
     return {
       invoiceId: session.qrisInvoiceId,
       amount: session.qrisAmount,
@@ -138,9 +246,10 @@ class SessionManager {
    * @param {string} customerId
    * @param {string} filePath
    */
-  setPaymentProof(customerId, filePath) {
-    const session = this.getSession(customerId);
+  async setPaymentProof(customerId, filePath) {
+    const session = await this.getSession(customerId);
     session.paymentProofPath = filePath;
+    await this._updateSession(customerId);
   }
 
   /**
@@ -148,8 +257,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {string|null}
    */
-  getPaymentProof(customerId) {
-    const session = this.getSession(customerId);
+  async getPaymentProof(customerId) {
+    const session = await this.getSession(customerId);
     return session.paymentProofPath;
   }
 
@@ -158,7 +267,29 @@ class SessionManager {
    * @param {string} orderId
    * @returns {string|null}
    */
-  findCustomerByOrderId(orderId) {
+  async findCustomerByOrderId(orderId) {
+    // Try Redis first with pattern scan
+    if (this.useRedis && redisClient.isReady()) {
+      try {
+        const client = redisClient.getClient();
+        const keys = await client.keys("session:*");
+
+        for (const key of keys) {
+          const sessionData = await client.get(key);
+          if (sessionData) {
+            const session = JSON.parse(sessionData);
+            if (session.orderId === orderId) {
+              return session.customerId;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("❌ Redis findCustomerByOrderId error:", error.message);
+        // Fall through to in-memory
+      }
+    }
+
+    // Fallback to in-memory
     for (const [customerId, session] of this.sessions.entries()) {
       if (session.orderId === orderId) {
         return customerId;
@@ -173,10 +304,11 @@ class SessionManager {
    * @param {string} method - Payment method (QRIS, OVO, DANA, GOPAY, SHOPEEPAY, VA)
    * @param {string} invoiceId - Payment invoice ID
    */
-  setPaymentMethod(customerId, method, invoiceId) {
-    const session = this.getSession(customerId);
+  async setPaymentMethod(customerId, method, invoiceId) {
+    const session = await this.getSession(customerId);
     session.paymentMethod = method;
     session.paymentInvoiceId = invoiceId;
+    await this._updateSession(customerId);
   }
 
   /**
@@ -184,8 +316,8 @@ class SessionManager {
    * @param {string} customerId
    * @returns {Object} Payment method and invoice ID
    */
-  getPaymentMethod(customerId) {
-    const session = this.getSession(customerId);
+  async getPaymentMethod(customerId) {
+    const session = await this.getSession(customerId);
     return {
       method: session.paymentMethod,
       invoiceId: session.paymentInvoiceId,
@@ -195,14 +327,26 @@ class SessionManager {
   /**
    * Clean up inactive sessions (older than 30 minutes)
    */
-  cleanupSessions() {
-    const thirtyMinutes = 30 * 60 * 1000;
+  async cleanupSessions() {
     const now = Date.now();
 
+    // Clean in-memory sessions
     for (const [customerId, session] of this.sessions.entries()) {
-      if (now - session.lastActivity > thirtyMinutes) {
+      if (now - session.lastActivity > this.sessionTTL * 1000) {
         this.sessions.delete(customerId);
       }
+    }
+
+    // Redis sessions auto-expire via TTL, no manual cleanup needed
+    console.log(`🧹 Cleaned up inactive sessions`);
+  }
+
+  /**
+   * Graceful shutdown - close Redis connection
+   */
+  async shutdown() {
+    if (this.useRedis) {
+      await redisClient.disconnect();
     }
   }
 }

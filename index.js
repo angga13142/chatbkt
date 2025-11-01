@@ -10,10 +10,16 @@ const qrcode = require("qrcode-terminal");
 const SessionManager = require("./sessionManager");
 const ChatbotLogic = require("./chatbotLogic");
 const MessageRouter = require("./lib/messageRouter");
+const WebhookServer = require("./webhookServer");
 
 // Initialize components
 const sessionManager = new SessionManager();
 const chatbotLogic = new ChatbotLogic(sessionManager);
+
+// Initialize session manager (connect to Redis)
+(async () => {
+  await sessionManager.initialize();
+})();
 
 // Pairing code configuration
 const usePairingCode = process.env.USE_PAIRING_CODE === "true";
@@ -87,6 +93,18 @@ client.on("ready", () => {
   console.log("⚡ Fast response mode enabled");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
+  // Start webhook server for automatic payment verification
+  if (process.env.WEBHOOK_URL) {
+    const webhookServer = new WebhookServer(
+      sessionManager,
+      chatbotLogic,
+      client
+    );
+    webhookServer.start();
+  } else {
+    console.log("⚠️  WEBHOOK_URL not configured, webhook server disabled");
+  }
+
   // Clean up inactive sessions every 10 minutes
   setInterval(() => {
     sessionManager.cleanupSessions();
@@ -123,8 +141,14 @@ client.on("error", (error) => {
 // Graceful shutdown handlers
 const shutdown = async (signal) => {
   console.log(`\n\n⚠️ Received ${signal}, shutting down gracefully...`);
+
+  // Close Redis connection
+  await sessionManager.shutdown();
+
+  // Close WhatsApp client
   await client.destroy();
-  console.log("✅ Client destroyed. Goodbye!");
+
+  console.log("✅ Shutdown complete. Goodbye!");
   process.exit(0);
 };
 

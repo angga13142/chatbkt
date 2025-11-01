@@ -4,9 +4,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.md'
+      - "**.js"
+      - "**.json"
+      - "**.md"
 
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
   code-review:
     runs-on: ubuntu-latest
     name: GitHub Copilot Code Review
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,8 +26,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci --ignore-scripts
@@ -45,18 +45,18 @@ jobs:
       - name: Check code style
         run: |
           echo "📋 Checking for common issues..."
-          
+
           # Check for console.log in production code (except index.js)
           if grep -n "console.log" chatbotLogic.js lib/*.js 2>/dev/null | grep -v "// TODO:" | grep -v "// DEBUG:"; then
             echo "⚠️  Warning: Found console.log in production code"
           fi
-          
+
           # Check for hardcoded credentials
           if grep -rn "sk_.*_secret\|xnd_.*_test\|password.*=" --include="*.js" --exclude="*.example.js" .; then
             echo "❌ Error: Possible hardcoded credentials found"
             exit 1
           fi
-          
+
           # Check for TODO/FIXME
           echo "📝 Found TODOs/FIXMEs:"
           grep -rn "TODO\|FIXME" --include="*.js" . || echo "None"
@@ -70,7 +70,7 @@ jobs:
         uses: github/copilot-code-review-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          review-type: 'full'
+          review-type: "full"
           focus-areas: |
             - Security vulnerabilities
             - Payment handling logic
@@ -80,7 +80,7 @@ jobs:
             - Error handling
             - Memory leaks
             - Best practices for WhatsApp bot
-          
+
       - name: Comment summary
         if: always()
         uses: actions/github-script@v7
@@ -88,25 +88,25 @@ jobs:
           script: |
             const fs = require('fs');
             const summary = `## 🤖 Code Review Summary
-            
+
             ✅ Syntax check completed
             ✅ Style guidelines verified
             ✅ Security audit completed
-            
+
             **Review Focus:**
             - Payment processing & Xendit integration
             - Session & state management
             - Security (rate limiting, validation, logging)
             - WhatsApp bot patterns
-            
+
             **Key Files:**
             - \`chatbotLogic.js\` - Business logic & state machine
             - \`lib/paymentHandlers.js\` - Payment processing
             - \`lib/inputValidator.js\` - Security & validation
             - \`sessionManager.js\` - Session storage
-            
+
             See detailed review comments below. 👇`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
