@@ -41,6 +41,50 @@ const systemSettings = {
 
   // Logging
   logLevel: process.env.LOG_LEVEL || "info",
+
+  // Manual Payment Accounts (E-wallet & Bank Transfer)
+  paymentAccounts: {
+    dana: {
+      enabled: process.env.DANA_ENABLED !== "false",
+      number: process.env.DANA_NUMBER || "081234567890",
+      name: process.env.DANA_NAME || "John Doe",
+    },
+    gopay: {
+      enabled: process.env.GOPAY_ENABLED !== "false",
+      number: process.env.GOPAY_NUMBER || "081234567890",
+      name: process.env.GOPAY_NAME || "John Doe",
+    },
+    ovo: {
+      enabled: process.env.OVO_ENABLED !== "false",
+      number: process.env.OVO_NUMBER || "081234567890",
+      name: process.env.OVO_NAME || "John Doe",
+    },
+    shopeepay: {
+      enabled: process.env.SHOPEEPAY_ENABLED !== "false",
+      number: process.env.SHOPEEPAY_NUMBER || "081234567890",
+      name: process.env.SHOPEEPAY_NAME || "John Doe",
+    },
+    bca: {
+      enabled: process.env.BCA_ENABLED !== "false",
+      accountNumber: process.env.BCA_ACCOUNT || "1234567890",
+      accountName: process.env.BCA_NAME || "John Doe",
+    },
+    bni: {
+      enabled: process.env.BNI_ENABLED !== "false",
+      accountNumber: process.env.BNI_ACCOUNT || "1234567890",
+      accountName: process.env.BNI_NAME || "John Doe",
+    },
+    bri: {
+      enabled: process.env.BRI_ENABLED !== "false",
+      accountNumber: process.env.BRI_ACCOUNT || "1234567890",
+      accountName: process.env.BRI_NAME || "John Doe",
+    },
+    mandiri: {
+      enabled: process.env.MANDIRI_ENABLED !== "false",
+      accountNumber: process.env.MANDIRI_ACCOUNT || "1234567890",
+      accountName: process.env.MANDIRI_NAME || "John Doe",
+    },
+  },
 };
 
 const products = {

@@ -82,7 +82,9 @@ chatbot/
 ## Key Directories
 
 ### `/lib` - Core Library
+
 Modular components for core functionality:
+
 - Input validation & rate limiting
 - Message routing
 - Payment handling
@@ -92,21 +94,27 @@ Modular components for core functionality:
 - Log rotation
 
 ### `/services` - External Services
+
 Third-party integrations and services:
+
 - **xenditService.js**: Primary payment gateway (QRIS, E-Wallet, VA)
 - **qrisService.js**: Legacy QRIS service
 - **webhookServer.js**: Payment callback handler
 - **productDelivery.js**: Auto-delivery system
 
 ### `/tests` - Test Suites
+
 Comprehensive testing:
+
 - Unit tests
 - Integration tests
 - Payment gateway tests
 - Admin command tests
 
 ### `/docs` - Documentation
+
 All project documentation including:
+
 - Architecture diagrams
 - Deployment guides
 - Sprint reports
@@ -114,6 +122,7 @@ All project documentation including:
 - Testing results
 
 ### `/archive` - Historical Files
+
 Old versions and deprecated files for reference.
 
 ## Running the Project
@@ -137,21 +146,21 @@ npm run lint:fix
 
 ```javascript
 // Core modules (from root)
-const SessionManager = require('./sessionManager');
-const ChatbotLogic = require('./chatbotLogic');
-const config = require('./config');
+const SessionManager = require("./sessionManager");
+const ChatbotLogic = require("./chatbotLogic");
+const config = require("./config");
 
 // Library modules
-const MessageRouter = require('./lib/messageRouter');
-const UIMessages = require('./lib/uiMessages');
+const MessageRouter = require("./lib/messageRouter");
+const UIMessages = require("./lib/uiMessages");
 
 // Services
-const XenditService = require('./services/xenditService');
-const WebhookServer = require('./services/webhookServer');
+const XenditService = require("./services/xenditService");
+const WebhookServer = require("./services/webhookServer");
 
 // From tests/ or services/ folders (going up one level)
-const SessionManager = require('../sessionManager');
-const XenditService = require('../services/xenditService');
+const SessionManager = require("../sessionManager");
+const XenditService = require("../services/xenditService");
 ```
 
 ## Configuration Files

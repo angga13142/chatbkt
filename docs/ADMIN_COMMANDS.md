@@ -15,6 +15,46 @@ ADMIN_NUMBER_2=6289876543210
 
 ---
 
+## 💳 Sistem Pembayaran
+
+Bot ini menggunakan **sistem hybrid** untuk pembayaran:
+
+### QRIS (Otomatis via Xendit)
+
+- Xendit menghasilkan QR code unik per pesanan
+- Pembayaran terverifikasi otomatis via webhook
+- Produk dikirim otomatis setelah pembayaran sukses
+
+### E-Wallet & Bank Transfer (Manual)
+
+- Pelanggan transfer ke akun pribadi admin
+- Pelanggan kirim bukti transfer (screenshot)
+- Admin verifikasi manual dan approve pesanan
+- Produk dikirim setelah `/approve`
+
+**Keuntungan sistem manual:**
+
+- Biaya lebih rendah (tidak ada fee Xendit)
+- Uang langsung masuk ke akun pribadi
+- Kontrol penuh atas verifikasi pembayaran
+
+**Konfigurasi akun pembayaran:**
+Edit file `.env` untuk mengatur akun e-wallet dan bank:
+
+```env
+# E-Wallet Accounts
+DANA_NUMBER=081234567890
+DANA_NAME=Your Name
+DANA_ENABLED=true
+
+# Bank Accounts
+BCA_ACCOUNT=1234567890
+BCA_NAME=Your Name
+BCA_ENABLED=true
+```
+
+---
+
 ## 📦 Manajemen Produk
 
 ### 1. Tambah Produk Baru

@@ -11,33 +11,84 @@
 
 ## Architecture Overview
 
-This is a WhatsApp chatbot built on `whatsapp-web.js` with a stateful session manager pattern. The architecture is intentionally simple - no database, minimal dependencies - optimized for low-resource VPS deployment (1 vCPU, 2GB RAM).
+This is a WhatsApp chatbot built on `whatsapp-web.js` with a stateful session manager pattern. The architecture follows **modular design principles** with clear separation of concerns - optimized for maintainability, testability, and scalability while still being VPS-friendly (1 vCPU, 2GB RAM).
 
 **Project Structure:**
 
 ```
 chatbot/
-├── index.js              # Entry point - WhatsApp client
-├── chatbotLogic.js       # Business logic & state machine
-├── sessionManager.js     # Session & cart management
-├── config.js             # Product catalog
-├── lib/                  # Core modules (8 files)
-├── services/             # External integrations (4 files)
-├── tests/                # Test suites (9 files)
-├── docs/                 # Documentation (14 files)
-└── archive/              # Old/backup files
+├── src/                  # NEW: Modular source code
+│   ├── core/            # Framework & infrastructure
+│   │   ├── WhatsAppClient.js      # WhatsApp initialization
+│   │   ├── EventHandler.js        # Event management
+│   │   ├── MessageDispatcher.js   # Message dispatch
+│   │   ├── MessageRouter.js       # Routing logic
+│   │   └── DependencyContainer.js # DI container
+│   ├── handlers/        # Business logic per domain
+│   │   ├── BaseHandler.js         # Abstract base class
+│   │   ├── CustomerHandler.js     # Customer commands (~300 lines)
+│   │   ├── AdminHandler.js        # Admin commands (~400 lines)
+│   │   └── ProductHandler.js      # Product management (~250 lines)
+│   ├── services/        # Domain services
+│   │   ├── session/     # Session & cart services
+│   │   ├── payment/     # Payment service abstractions
+│   │   └── product/     # Product service operations
+│   ├── models/          # Data models (Session, Product, Order)
+│   ├── middleware/      # Cross-cutting concerns (rate limiting, validation)
+│   ├── utils/           # Utilities (formatters, fuzzy search, constants)
+│   └── config/          # Configuration split (app, products, payment)
+├── index.js             # Bootstrap only (~80 lines)
+├── lib/                 # Legacy: Core modules (being phased out)
+├── services/            # Legacy: External integrations (being phased out)
+├── tests/               # Test suites (unit + integration)
+├── docs/                # Documentation including MODULARIZATION.md
+└── archive/             # Old/backup files
+
+**TOTAL: Changed from 4 large files (2,668 lines) to 16+ modular files (~150 lines each)**
 ```
 
-**Core components:**
+**Core Architectural Principles:**
 
-- `index.js` - WhatsApp client initialization, message routing, error handling, graceful shutdown
-- `chatbotLogic.js` - Business logic implementing menu-driven conversation flow with step-based state machine
-- `sessionManager.js` - In-memory session storage using Map, tracks cart and conversation state per customer (phone number)
-- `config.js` - Product catalog with accessor functions; stock levels configurable via env vars
-- `lib/` - Modular components: messageRouter, paymentHandlers, uiMessages, inputValidator, transactionLogger, redisClient, logRotationManager
-- `services/` - External services: xenditService (payment), webhookServer (callbacks), productDelivery, qrisService
+1. **Single Responsibility** - Each module has ONE clear purpose
+2. **Dependency Injection** - Services injected, not hardcoded
+3. **Separation of Concerns** - Business logic separated from infrastructure
+4. **Testability** - Each module can be unit tested independently
+5. **SOLID Principles** - Applied throughout the codebase
 
-**Key insight:** Each customer's journey is tracked via a "step" (menu/browsing/checkout) that determines how their next message is interpreted. The `SessionManager` provides isolation - concurrent customers never interfere.
+**New Modular Components:**
+
+**Core Layer** (`src/core/`):
+
+- `WhatsAppClient.js` - WhatsApp client lifecycle management
+- `EventHandler.js` - Event listener registration and handling
+- `MessageDispatcher.js` - Message receiving, filtering, and dispatch
+- `MessageRouter.js` - Routes messages to appropriate handlers based on command/step
+- `DependencyContainer.js` - Manages service dependencies and lifecycle
+
+**Handler Layer** (`src/handlers/`):
+
+- `CustomerHandler.js` - Menu, browsing, cart, checkout, order history
+- `AdminHandler.js` - 13 admin commands (approve, broadcast, stats, stock, settings, etc.)
+- `ProductHandler.js` - Product management (add, edit, remove, fuzzy search)
+- `BaseHandler.js` - Abstract base class with common handler functionality
+
+**Service Layer** (`src/services/`):
+
+- `session/SessionService.js` - Session CRUD operations
+- `session/CartService.js` - Shopping cart business logic
+- `session/RedisStorage.js` - Redis persistence implementation
+- `session/MemoryStorage.js` - In-memory fallback storage
+- `payment/PaymentService.js` - Payment abstraction
+- `product/ProductService.js` - Product operations
+- `product/StockManager.js` - Stock tracking and validation
+
+**Configuration** (`src/config/`):
+
+- `app.config.js` - System settings (currency, session, rate limits, features)
+- `products.config.js` - Product catalog (premium accounts, virtual cards)
+- `payment.config.js` - Payment accounts (e-wallet, bank transfer)
+
+**Key insight:** Each customer's journey is tracked via a "step" (menu/browsing/checkout) that determines how their next message is interpreted. The modular architecture allows handlers to be independently tested and modified without affecting other parts of the system. The `DependencyContainer` manages service lifecycle and provides clean dependency injection.
 
 ## Development Workflow
 
@@ -64,14 +115,41 @@ npm test  # Runs tests/test.js - validates logic without WhatsApp connection
 
 ### Message Processing Flow
 
-Messages follow a strict pipeline in `chatbotLogic.js`:
+Messages follow a modular pipeline using the new architecture:
 
-1. Normalize input (lowercase, trim)
-2. Check for global commands (`menu`, `cart`) - always accessible regardless of step
-3. Route to step-specific handler based on current session step
-4. Update session state and return response string
+**Pipeline:** `MessageDispatcher` → `MessageRouter` → `Handler` → Response
 
-**Example:** When customer types "netflix" during browsing step, `handleProductSelection()` uses fuzzy matching (partial name/ID match) to find product, adds to cart, returns confirmation message.
+1. **Dispatcher** (`src/core/MessageDispatcher.js`) - Receives WhatsApp message, filters groups/status
+2. **Router** (`src/core/MessageRouter.js`) - Analyzes command type and session step
+3. **Handler** (`src/handlers/*`) - Processes business logic (Customer/Admin/Product handler)
+4. **Response** - Handler returns formatted message string
+
+**Flow Details:**
+
+1. Normalize input (lowercase, trim) in Dispatcher
+2. Check for global commands (`menu`, `cart`) in Router - always accessible
+3. Check for admin commands (prefix `/`) in Router - delegate to AdminHandler
+4. Route to step-specific handler method based on current session step
+5. Handler updates session state via SessionService
+6. Handler returns response string to Dispatcher
+7. Dispatcher sends reply via WhatsApp client
+
+**Example:** When customer types "netflix" during browsing step:
+
+- `MessageDispatcher` receives message, validates not from group
+- `MessageRouter` sees step='browsing', routes to `CustomerHandler.handleProductSelection()`
+- `CustomerHandler` uses `FuzzySearch` utility (in `src/utils/`) to find product
+- Handler calls `CartService.add()` to add product to cart
+- Handler returns confirmation message
+- Dispatcher sends reply to customer
+
+**Key Advantages of New Flow:**
+
+- Each component has single responsibility
+- Easy to test each step independently
+- Easy to add middleware (logging, rate limiting, validation)
+- Clear error handling boundaries
+- Services are reusable across handlers
 
 ### Session State Machine
 
@@ -186,6 +264,31 @@ if (message.hasMedia && message.type === "image") {
 ## Common Modifications
 
 **Adding a new command:**
+
+**NEW APPROACH (Modular):**
+
+1. **For global commands** - Add to `MessageRouter.route()` routing logic
+2. **For customer commands** - Add method to `CustomerHandler` class
+3. **For admin commands** - Add method to `AdminHandler` class
+4. **For product commands** - Add method to `ProductHandler` class
+5. **Register in DI container** if new service is needed
+
+**Example - Add new customer command:**
+
+```javascript
+// In src/handlers/CustomerHandler.js
+async handleTrackOrder(customerId, orderId) {
+  const order = await this.orderService.findById(orderId);
+  return UIMessages.orderTracking(order);
+}
+
+// In src/core/MessageRouter.js
+if (message === 'track' || message === '/track') {
+  return this.handlers.customer.handleTrackOrder(customerId, message);
+}
+```
+
+**OLD APPROACH (Legacy - being phased out):**
 
 1. Add global command check in `processMessage()` (like `menu` and `cart`)
 2. Or add to step-specific handler if only available in certain states
