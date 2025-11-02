@@ -3,10 +3,7 @@
  * Routes messages to appropriate handlers based on command and session state
  */
 
-const {
-  SessionSteps,
-  GlobalCommands,
-} = require("../utils/Constants");
+const { SessionSteps, GlobalCommands } = require("../utils/Constants");
 
 class MessageRouter {
   constructor(handlers) {
@@ -33,6 +30,12 @@ class MessageRouter {
     if (message.startsWith("/")) {
       console.log(`[MessageRouter] -> Admin handler`);
       return await this.handlers.admin.handle(customerId, message);
+    }
+
+    // Admin bulk add mode (special admin step)
+    if (step === "admin_bulk_add") {
+      console.log(`[MessageRouter] -> Admin bulk add handler`);
+      return await this.handlers.admin.processBulkAdd(customerId, message);
     }
 
     // Global customer commands (accessible from any step)

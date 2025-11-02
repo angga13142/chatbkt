@@ -39,10 +39,31 @@ class ProductDelivery {
       // Update file with remaining credentials
       fs.writeFileSync(filepath, remainingLines.join("\n") + "\n", "utf-8");
 
+      // Archive sold credential to sales ledger
+      this.archiveSoldCredential(productId, credential);
+
       return this.parseCredential(credential);
     } catch (error) {
       console.error(`❌ Error reading product credentials: ${error.message}`);
       return null;
+    }
+  }
+
+  /**
+   * Archive sold credential to sales ledger
+   * @param {string} productId - Product ID
+   * @param {string} credential - Sold credential
+   */
+  archiveSoldCredential(productId, credential) {
+    try {
+      const InventoryManager = require("../src/services/inventory/InventoryManager");
+      const inventoryManager = new InventoryManager();
+
+      // Archive will be done when we know orderId and customerId
+      // For now, just mark it in temporary storage
+      this.lastSoldCredential = { productId, credential };
+    } catch (error) {
+      console.error(`❌ Error archiving credential: ${error.message}`);
     }
   }
 
@@ -89,6 +110,14 @@ class ProductDelivery {
           product: item,
           credentials: credentials,
         });
+
+        // Archive to sales ledger
+        this.archiveToSalesLedger(
+          item.id,
+          credentials.raw,
+          orderId,
+          customerId
+        );
       } else {
         failedProducts.push(item);
       }
@@ -102,6 +131,33 @@ class ProductDelivery {
       delivered: deliveredProducts,
       failed: failedProducts,
     };
+  }
+
+  /**
+   * Archive sold credential to sales ledger
+   * @param {string} productId - Product ID
+   * @param {string} credential - Sold credential
+   * @param {string} orderId - Order ID
+   * @param {string} customerId - Customer ID
+   */
+  archiveToSalesLedger(productId, credential, orderId, customerId) {
+    try {
+      const InventoryManager = require("../src/services/inventory/InventoryManager");
+      const inventoryManager = new InventoryManager();
+
+      inventoryManager.archiveSoldCredential(
+        productId,
+        credential,
+        orderId,
+        customerId
+      );
+
+      console.log(
+        `📦 Archived to sales ledger: ${productId} for order ${orderId}`
+      );
+    } catch (error) {
+      console.error(`❌ Error archiving to sales ledger: ${error.message}`);
+    }
   }
 
   /**

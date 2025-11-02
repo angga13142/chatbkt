@@ -1,0 +1,8 @@
+{
+  "productId": "test-netflix",
+  "orderId": "ORD-TEST-123",
+  "customerId": "6289999999999@c.us",
+  "credentials": "premium1@netflix.com:Password123!",
+  "soldAt": "2025-11-02T19:36:04.678Z",
+  "transactionId": "TXN-1762112164678-84821591"
+}
