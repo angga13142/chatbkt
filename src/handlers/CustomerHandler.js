@@ -291,19 +291,15 @@ class CustomerHandler extends BaseHandler {
       };
     }
 
-    const totalUSD = cart.reduce((sum, item) => sum + item.price, 0);
+    const totalIDR = cart.reduce((sum, item) => sum + item.price, 0); // Price already in IDR
     const orderId = `ORD-${Date.now()}-${customerId.slice(-4)}`;
 
     await this.sessionManager.setOrderId(customerId, orderId);
     await this.setStep(customerId, SessionSteps.SELECT_PAYMENT);
 
-    const XenditService = require("../../services/xenditService");
-    const totalIDR = XenditService.convertToIDR(totalUSD);
-
     this.log(customerId, "checkout_initiated", {
       orderId,
       itemCount: cart.length,
-      totalUSD,
       totalIDR,
     });
 
