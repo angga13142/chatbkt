@@ -42,9 +42,9 @@ class ProductHandler extends BaseHandler {
    * Search for product using fuzzy matching
    * @param {string} customerId
    * @param {string} query
-   * @returns {Promise<Object|null>}
+   * @returns {Object|null}
    */
-  async searchProduct(customerId, query) {
+  searchProduct(customerId, query) {
     const products = this.productService.getAllProducts();
     const result = this.fuzzySearch.search(products, query);
 

@@ -13,10 +13,11 @@ class BaseHandler {
    * Main handler method - must be implemented by subclasses
    * @param {string} customerId - Customer WhatsApp ID
    * @param {string} message - Message text
-   * @param {Object} context - Additional context
+   * @param {Object} _context - Additional context (unused in base)
    * @returns {Promise<string>} Response message
    */
-  async handle(customerId, message, context = {}) {
+  // eslint-disable-next-line require-await
+  async handle(customerId, message, _context = {}) {
     throw new Error(`handle() must be implemented by ${this.constructor.name}`);
   }
 

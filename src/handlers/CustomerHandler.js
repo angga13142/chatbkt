@@ -163,18 +163,17 @@ class CustomerHandler extends BaseHandler {
           message.toLowerCase()
         );
 
-        this.logInfo(
+        this.log(
           customerId,
-          `Fuzzy match: "${message}" -> "${
-            product.name
-          }" (score: ${fuzzyScore.toFixed(2)})`
+          "fuzzy_match",
+          `Fuzzy match: "${message}" -> "${product.name}" (score: ${fuzzyScore.toFixed(2)})`
         );
       }
     }
 
     // Check if AI should handle this (low confidence or question)
     if (this.aiHandler.shouldHandleMessage(message, fuzzyScore)) {
-      this.logInfo(customerId, `AI fallback triggered for: "${message}"`);
+      this.log(customerId, "ai_fallback", `AI fallback triggered for: "${message}"`);
 
       const cart = await this.sessionManager.getCart(customerId);
       const aiResponse = await this.aiHandler.handleFallback({

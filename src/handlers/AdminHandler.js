@@ -452,7 +452,7 @@ class AdminHandler extends BaseHandler {
   /**
    * /addproduct - Add new product to catalog
    */
-  async handleAddProduct(adminId, message) {
+  handleAddProduct(adminId, message) {
     const commandText = message.substring("/addproduct ".length).trim();
 
     if (!commandText) {
@@ -565,7 +565,7 @@ class AdminHandler extends BaseHandler {
   /**
    * /settings - Manage system settings
    */
-  async handleSettings(adminId, message) {
+  handleSettings(adminId, message) {
     const parts = message.split(/\s+/);
 
     // View all settings

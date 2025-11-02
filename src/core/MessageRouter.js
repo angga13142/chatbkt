@@ -5,7 +5,6 @@
 
 const {
   SessionSteps,
-  AdminCommands,
   GlobalCommands,
 } = require("../utils/Constants");
 

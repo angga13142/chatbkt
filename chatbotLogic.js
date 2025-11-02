@@ -11,7 +11,6 @@ const PaymentHandlers = require("./lib/paymentHandlers");
 const InputValidator = require("./lib/inputValidator");
 const TransactionLogger = require("./lib/transactionLogger");
 const XenditService = require("./services/xenditService");
-const { SessionSteps } = require("./src/utils/Constants");
 
 class ChatbotLogic {
   constructor(sessionManager) {

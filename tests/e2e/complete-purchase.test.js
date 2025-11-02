@@ -29,6 +29,11 @@ class MockSessionManager {
     session.step = step;
   }
 
+  getStep(customerId) {
+    const session = this.getSession(customerId);
+    return session.step;
+  }
+
   getCart(customerId) {
     return this.getSession(customerId).cart;
   }
@@ -108,7 +113,9 @@ describe("E2E: Complete Purchase Journey", () => {
     // Step 6: Proceed to checkout
     sessionManager.setStep(customerId, "checkout");
     result = await customerHandler.handleCheckout(customerId, "1");
-    expect(result).to.be.a("string");
+    // handleCheckout returns an object with {message, qrisData}
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("message");
 
     // Verify final state
     expect(cart.length).to.be.greaterThan(0);
@@ -244,7 +251,9 @@ describe("E2E: Complete Purchase Journey", () => {
     sessionManager.setStep(customerId, "checkout");
 
     const result = await customerHandler.handleCheckout(customerId, "1");
-    expect(result).to.include("kosong");
+    // handleCheckout returns an object with {message, qrisData}
+    expect(result).to.be.an("object");
+    expect(result.message).to.include("kosong");
   });
 
   it("should calculate correct order total", async () => {
