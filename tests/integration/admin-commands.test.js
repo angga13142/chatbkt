@@ -96,7 +96,7 @@ describe("Integration: Admin Commands", () => {
   describe("stats command", () => {
     it("should show system statistics", async () => {
       const result = await adminHandler.handleStats(adminId);
-      expect(result).to.match(/statistics/i);
+      expect(result).to.match(/admin\s+dashboard/i);
     });
 
     it("should show active sessions count", async () => {
@@ -221,7 +221,7 @@ describe("Integration: Admin Commands", () => {
   describe("edge cases", () => {
     it("should handle commands with extra spaces", async () => {
       const result = await adminHandler.handle(adminId, "/stats   ", "menu");
-      expect(result).to.match(/statistics/i);
+      expect(result).to.match(/admin\s+dashboard/i);
     });
 
     it("should handle uppercase commands", async () => {

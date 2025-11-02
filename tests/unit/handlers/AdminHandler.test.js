@@ -127,7 +127,7 @@ describe("AdminHandler", () => {
     it("should handle /stats command", async () => {
       const result = await adminHandler.handle(adminId, "/stats", "menu");
       expect(result).to.be.a("string");
-      expect(result).to.match(/statistics/i);
+      expect(result).to.match(/admin\s+dashboard/i);
     });
 
     it("should handle /help command", async () => {
@@ -154,7 +154,7 @@ describe("AdminHandler", () => {
       const adminId = "6281234567890@c.us";
       const result = await adminHandler.handleStats(adminId);
       expect(result).to.be.a("string");
-      expect(result).to.match(/statistics/i);
+      expect(result).to.match(/admin\s+dashboard/i);
     });
 
     it("should show active sessions count", async () => {

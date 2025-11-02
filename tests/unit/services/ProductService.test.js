@@ -210,7 +210,7 @@ describe("ProductService", () => {
     });
 
     it("formatProductList should return formatted string", () => {
-      const formatted = productService.formatProductList(15000);
+      const formatted = productService.formatProductList();
       expect(formatted).to.be.a("string");
       expect(formatted).to.include("Katalog Produk");
       expect(formatted).to.include("Premium Accounts");

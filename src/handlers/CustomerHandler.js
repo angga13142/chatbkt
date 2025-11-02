@@ -4,11 +4,7 @@
  */
 
 const BaseHandler = require("./BaseHandler");
-const {
-  formatProductList,
-  getProductById,
-  getAllProducts,
-} = require("../../config");
+const { getProductById, getAllProducts } = require("../../config");
 const UIMessages = require("../../lib/uiMessages");
 const FuzzySearch = require("../utils/FuzzySearch");
 const { SessionSteps } = require("../utils/Constants");
@@ -16,6 +12,8 @@ const AIHandler = require("./AIHandler");
 const OrderService = require("../services/order/OrderService");
 const WishlistService = require("../services/wishlist/WishlistService");
 const PromoService = require("../services/promo/PromoService");
+const ReviewService = require("../services/review/ReviewService");
+const ProductService = require("../services/product/ProductService");
 
 class CustomerHandler extends BaseHandler {
   constructor(sessionManager, paymentHandlers, logger = null) {
@@ -25,6 +23,8 @@ class CustomerHandler extends BaseHandler {
     this.orderService = new OrderService();
     this.wishlistService = new WishlistService(sessionManager);
     this.promoService = new PromoService();
+    this.reviewService = new ReviewService();
+    this.productService = new ProductService();
   }
 
   /**
@@ -65,6 +65,11 @@ class CustomerHandler extends BaseHandler {
       if (message === "wishlist" || message === "/wishlist") {
         console.log(`[CustomerHandler] -> Global command: wishlist`);
         return await this.handleViewWishlist(customerId);
+      }
+
+      if (message.startsWith("/review ") || message.startsWith("review ")) {
+        console.log(`[CustomerHandler] -> Global command: review`);
+        return await this.handleAddReview(customerId, message);
       }
 
       // Route based on current step
@@ -145,7 +150,9 @@ class CustomerHandler extends BaseHandler {
    * Show available products
    */
   showProducts() {
-    const productList = formatProductList();
+    const productList = this.productService.formatProductList(
+      this.reviewService
+    );
     return UIMessages.browsingInstructions(productList);
   }
 
@@ -726,6 +733,119 @@ class CustomerHandler extends BaseHandler {
     } catch (error) {
       this.logError(customerId, error, { action: "move_to_cart", productId });
       return "❌ Gagal memindahkan ke keranjang. Silakan coba lagi atau hubungi admin.";
+    }
+  }
+
+  /**
+   * Handle add product review
+   * Command: /review <product-name> <rating> <review-text>
+   * Example: /review netflix 5 Mantap banget!
+   * @param {string} customerId
+   * @param {string} message
+   * @returns {string} Response message
+   */
+  handleAddReview(customerId, message) {
+    console.log(`[CustomerHandler] handleAddReview() - Message: "${message}"`);
+
+    try {
+      // Parse command: /review netflix 5 Mantap!
+      const parts = message.trim().replace(/^\//, "").split(/\s+/);
+
+      if (parts.length < 4) {
+        return (
+          "❌ *Format salah!*\n\n" +
+          "*Format:* `/review <produk> <rating> <komentar>`\n\n" +
+          "*Contoh:*\n" +
+          "• /review netflix 5 Bagus sekali!\n" +
+          "• /review spotify 4 Mantap, lancar\n\n" +
+          "*Rating:* 1-5 bintang ⭐"
+        );
+      }
+
+      // Extract product name, rating, and review text
+      const productName = parts[1];
+      const ratingStr = parts[2];
+      const reviewText = parts.slice(3).join(" ");
+
+      // Validate rating
+      const rating = parseInt(ratingStr);
+      if (isNaN(rating) || rating < 1 || rating > 5) {
+        return (
+          "❌ *Rating tidak valid!*\n\n" +
+          "Rating harus berupa angka 1-5\n\n" +
+          "Contoh: /review netflix *5* Mantap!"
+        );
+      }
+
+      // Find product using fuzzy search
+      const allProducts = getAllProducts();
+      const product = FuzzySearch.search(allProducts, productName, 3);
+
+      if (!product) {
+        return (
+          `❌ *Produk "${productName}" tidak ditemukan*\n\n` +
+          "Ketik *browse* untuk melihat daftar produk."
+        );
+      }
+
+      // OPTIONAL: Verify purchase (check if customer has ordered this product)
+      // Uncomment if you want to enforce purchase verification
+      /*
+      const orders = await this.orderService.getCustomerOrders(customerId);
+      const hasPurchased = orders.some(order => 
+        order.items?.some(item => item.id === product.id) &&
+        order.rawStatus === 'completed'
+      );
+
+      if (!hasPurchased) {
+        return (
+          "❌ *Anda belum membeli produk ini*\n\n" +
+          "Hanya customer yang sudah membeli produk yang dapat memberikan review.\n\n" +
+          "Ketik *browse* untuk mulai berbelanja."
+        );
+      }
+      */
+
+      // Add review
+      const result = this.reviewService.addReview(
+        product.id,
+        customerId,
+        rating,
+        reviewText,
+        null // orderId optional
+      );
+
+      if (!result.success) {
+        return result.message;
+      }
+
+      // Show success message with product info
+      const stars = "⭐".repeat(rating);
+      const avgRating = this.reviewService.getAverageRating(product.id);
+
+      let response = result.message + "\n\n";
+      response += `📦 *${product.name}*\n`;
+      response += `${stars} ${rating}/5\n`;
+      response += `💬 "${reviewText}"\n\n`;
+      response += `━━━━━━━━━━━━━━━━━━\n`;
+      response += `📊 *Rating Produk:*\n`;
+      response += `${
+        avgRating.count > 1
+          ? "⭐ " + avgRating.average + "/5.0"
+          : "⭐ " + avgRating.average + "/5.0"
+      } (${avgRating.count} review${avgRating.count > 1 ? "s" : ""})`;
+
+      this.log(customerId, "review_added", {
+        productId: product.id,
+        productName: product.name,
+        rating,
+        reviewId: result.reviewId,
+      });
+
+      return response;
+    } catch (error) {
+      this.logError(customerId, error, { action: "add_review", message });
+      return "❌ Gagal menambahkan review. Silakan coba lagi atau hubungi admin.";
     }
   }
 }

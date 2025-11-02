@@ -163,9 +163,10 @@ class ProductService {
 
   /**
    * Format product list for display
+   * @param {Object} reviewService - ReviewService instance (optional)
    * @returns {string} Formatted list
    */
-  formatProductList() {
+  formatProductList(reviewService = null) {
     let message = "*🛍️ Katalog Produk Premium*\n\n";
 
     // Premium Accounts
@@ -174,9 +175,21 @@ class ProductService {
       const priceIDR = this.formatIDR(product.price); // Price is already in IDR
       const stockStatus =
         product.stock > 0 ? `✅ (${product.stock})` : "❌ Stok Habis";
+
       message += `${index + 1}. ${product.name}\n`;
       message += `   💰 ${priceIDR}\n`;
       message += `   📦 ${stockStatus}\n`;
+
+      // Add rating if reviewService provided
+      if (reviewService) {
+        const rating = reviewService.getAverageRating(product.id);
+        if (rating.count > 0) {
+          message += `   ⭐ ${rating.average}/5.0 (${rating.count} review${
+            rating.count > 1 ? "s" : ""
+          })\n`;
+        }
+      }
+
       message += `   ℹ️ ${product.description}\n\n`;
     });
 
@@ -186,9 +199,21 @@ class ProductService {
       const priceIDR = this.formatIDR(product.price); // Price is already in IDR
       const stockStatus =
         product.stock > 0 ? `✅ (${product.stock})` : "❌ Stok Habis";
+
       message += `${index + 1}. ${product.name}\n`;
       message += `   💰 ${priceIDR}\n`;
       message += `   📦 ${stockStatus}\n`;
+
+      // Add rating if reviewService provided
+      if (reviewService) {
+        const rating = reviewService.getAverageRating(product.id);
+        if (rating.count > 0) {
+          message += `   ⭐ ${rating.average}/5.0 (${rating.count} review${
+            rating.count > 1 ? "s" : ""
+          })\n`;
+        }
+      }
+
       message += `   ℹ️ ${product.description}\n\n`;
     });
 
