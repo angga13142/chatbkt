@@ -128,12 +128,15 @@ class SessionManager {
   /**
    * Update session in both Redis and memory
    * @param {string} customerId
+   * @param {Object} session - Session object to save
    */
-  async _updateSession(customerId) {
-    const session = this.sessions.get(customerId);
+  async _updateSession(customerId, session) {
     if (!session) return;
 
     session.lastActivity = Date.now();
+
+    // Update in-memory map
+    this.sessions.set(customerId, session);
 
     // Save to Redis
     await this._saveToRedis(customerId, session);
@@ -147,7 +150,7 @@ class SessionManager {
   async addToCart(customerId, product) {
     const session = await this.getSession(customerId);
     session.cart.push(product);
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -157,7 +160,7 @@ class SessionManager {
   async clearCart(customerId) {
     const session = await this.getSession(customerId);
     session.cart = [];
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -178,7 +181,7 @@ class SessionManager {
   async setStep(customerId, step) {
     const session = await this.getSession(customerId);
     session.step = step;
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -199,7 +202,7 @@ class SessionManager {
   async setOrderId(customerId, orderId) {
     const session = await this.getSession(customerId);
     session.orderId = orderId;
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -214,7 +217,7 @@ class SessionManager {
     session.qrisInvoiceId = invoiceId;
     session.qrisAmount = amount;
     session.qrisDate = date;
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -249,7 +252,7 @@ class SessionManager {
   async setPaymentProof(customerId, filePath) {
     const session = await this.getSession(customerId);
     session.paymentProofPath = filePath;
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**
@@ -308,7 +311,7 @@ class SessionManager {
     const session = await this.getSession(customerId);
     session.paymentMethod = method;
     session.paymentInvoiceId = invoiceId;
-    await this._updateSession(customerId);
+    await this._updateSession(customerId, session);
   }
 
   /**

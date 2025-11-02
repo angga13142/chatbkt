@@ -19,49 +19,63 @@ class CustomerHandler extends BaseHandler {
     super(sessionManager, logger);
     this.paymentHandlers = paymentHandlers;
     this.aiHandler = new AIHandler(undefined, undefined, logger);
-    this.fuzzySearch = new FuzzySearch();
   }
 
   /**
    * Main handler - routes to appropriate method based on step
    */
   async handle(customerId, message, step) {
+    console.log(
+      `[CustomerHandler] handle() called - Step: ${step}, Message: "${message}"`
+    );
+
     try {
       // Global commands accessible from any step
       if (message === "menu" || message === "help") {
+        console.log(`[CustomerHandler] -> Global command: menu/help`);
         await this.setStep(customerId, SessionSteps.MENU);
         return UIMessages.mainMenu();
       }
 
       if (message === "cart") {
+        console.log(`[CustomerHandler] -> Global command: cart`);
         return await this.showCart(customerId);
       }
 
       if (message === "history" || message === "/history") {
+        console.log(`[CustomerHandler] -> Global command: history`);
         return await this.handleOrderHistory(customerId);
       }
 
       // Route based on current step
+      console.log(`[CustomerHandler] Routing to step-specific handler...`);
       switch (step) {
         case SessionSteps.MENU:
+          console.log(`[CustomerHandler] -> handleMenuSelection()`);
           return await this.handleMenuSelection(customerId, message);
 
         case SessionSteps.BROWSING:
+          console.log(`[CustomerHandler] -> handleProductSelection()`);
           return await this.handleProductSelection(customerId, message);
 
         case SessionSteps.CHECKOUT:
+          console.log(`[CustomerHandler] -> handleCheckout()`);
           return await this.handleCheckout(customerId, message);
 
         case SessionSteps.AWAITING_PAYMENT:
+          console.log(`[CustomerHandler] -> handleAwaitingPayment()`);
           return await this.handleAwaitingPayment(customerId, message);
 
         case SessionSteps.AWAITING_ADMIN_APPROVAL:
+          console.log(`[CustomerHandler] -> awaitingAdminApproval()`);
           return UIMessages.awaitingAdminApproval();
 
         default:
+          console.log(`[CustomerHandler] -> default: mainMenu()`);
           return UIMessages.mainMenu();
       }
     } catch (error) {
+      console.error(`[CustomerHandler] Error in handle():`, error);
       this.logError(customerId, error, { message, step });
       return "❌ Terjadi kesalahan. Silakan coba lagi atau ketik *menu* untuk kembali ke menu utama.";
     }
@@ -71,23 +85,35 @@ class CustomerHandler extends BaseHandler {
    * Handle main menu selection
    */
   async handleMenuSelection(customerId, message) {
+    console.log(
+      `[CustomerHandler] handleMenuSelection() - Message: "${message}"`
+    );
+
     if (message === "1" || message === "browse" || message === "products") {
+      console.log(`[CustomerHandler] Setting step to BROWSING...`);
       await this.setStep(customerId, SessionSteps.BROWSING);
+      console.log(
+        `[CustomerHandler] Step set to BROWSING, returning product list`
+      );
       return this.showProducts();
     }
 
     if (message === "2" || message === "cart") {
+      console.log(`[CustomerHandler] Showing cart`);
       return await this.showCart(customerId);
     }
 
     if (message === "3" || message === "about") {
+      console.log(`[CustomerHandler] Showing about`);
       return UIMessages.about();
     }
 
     if (message === "4" || message === "support" || message === "contact") {
+      console.log(`[CustomerHandler] Showing contact`);
       return UIMessages.contact();
     }
 
+    console.log(`[CustomerHandler] Invalid option, showing menu`);
     return UIMessages.invalidOption() + "\n\n" + UIMessages.mainMenu();
   }
 
@@ -103,19 +129,39 @@ class CustomerHandler extends BaseHandler {
    * Handle product selection during browsing
    */
   async handleProductSelection(customerId, message) {
+    console.log(
+      `[CustomerHandler] handleProductSelection called: "${message}"`
+    );
+
     const allProducts = getAllProducts();
+    console.log(`[CustomerHandler] Total products: ${allProducts.length}`);
 
     // Try exact match by ID first
     let product = getProductById(message);
     let fuzzyScore = 1.0; // Perfect match
 
-    // If not found, try fuzzy search
-    if (!product) {
-      const fuzzyResults = this.fuzzySearch.search(message, allProducts);
+    console.log(
+      `[CustomerHandler] Exact match result:`,
+      product ? product.id : "null"
+    );
 
-      if (fuzzyResults.length > 0) {
-        product = fuzzyResults[0].item;
-        fuzzyScore = fuzzyResults[0].score;
+    // If not found, try fuzzy search with FuzzySearch utility
+    if (!product) {
+      console.log(`[CustomerHandler] Trying fuzzy search for: "${message}"`);
+      // Use static method with correct parameter order: search(products, query)
+      product = FuzzySearch.search(allProducts, message, 5); // threshold = 5
+
+      console.log(
+        `[CustomerHandler] Fuzzy search result:`,
+        product ? product.id : "null"
+      );
+
+      if (product) {
+        // Calculate similarity score (1.0 = perfect, 0.0 = no match)
+        fuzzyScore = FuzzySearch.similarityRatio(
+          product.name.toLowerCase(),
+          message.toLowerCase()
+        );
 
         this.logInfo(
           customerId,

@@ -152,11 +152,19 @@ class AdminHandler extends BaseHandler {
       orderId
     );
 
-    // Log admin approval and delivery
+    // Calculate totals
+    const { IDR_RATE } = require("../../config");
+    const totalUSD = cart.reduce((sum, item) => sum + item.price, 0);
+    const totalIDR = totalUSD * IDR_RATE;
+
+    // Log admin approval with complete order data
     this.log(adminId, "approve_order", {
       orderId,
       customerId,
-      products: cart.map((p) => p.name),
+      items: cart.map((p) => ({ id: p.id, name: p.name, price: p.price })),
+      totalUSD,
+      totalIDR,
+      products: cart.map((p) => p.name), // Keep for backward compatibility
     });
 
     // Decrement stock

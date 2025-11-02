@@ -17,14 +17,6 @@ const logRotationManager = require("./lib/logRotationManager");
 const sessionManager = new SessionManager();
 const chatbotLogic = new ChatbotLogic(sessionManager);
 
-// Initialize session manager (connect to Redis)
-(async () => {
-  await sessionManager.initialize();
-
-  // Start log rotation manager
-  logRotationManager.start();
-})();
-
 // Pairing code configuration
 const usePairingCode = process.env.USE_PAIRING_CODE === "true";
 const pairingPhoneNumber = process.env.PAIRING_PHONE_NUMBER || "";
@@ -61,6 +53,26 @@ const client = new Client(clientOptions);
 
 // Initialize message router
 const messageRouter = new MessageRouter(client, sessionManager, chatbotLogic);
+
+// Initialize session manager (connect to Redis) and start client
+(async () => {
+  try {
+    console.log("🔧 Starting initialization sequence...");
+    await sessionManager.initialize();
+
+    // Start log rotation manager
+    logRotationManager.start();
+
+    // Start WhatsApp client after initialization
+    console.log("🚀 Initializing WhatsApp client...");
+    await client.initialize();
+    console.log("✅ WhatsApp client initialization started!");
+  } catch (error) {
+    console.error("❌ Initialization error:", error);
+    console.error(error.stack);
+    process.exit(1);
+  }
+})();
 
 // Event: QR Code
 client.on("qr", (qr) => {
@@ -175,5 +187,3 @@ if (usePairingCode && pairingPhoneNumber) {
   console.log("📱 Auth Method: QR Code");
 }
 console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-
-client.initialize();

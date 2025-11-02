@@ -66,7 +66,13 @@ class BaseHandler {
    * @param {string} step
    */
   async setStep(customerId, step) {
+    console.log(`[BaseHandler] setStep() called: ${customerId} -> ${step}`);
     await this.sessionManager.setStep(customerId, step);
+    console.log(`[BaseHandler] setStep() completed`);
+
+    // Verify step was set
+    const verifyStep = await this.sessionManager.getStep(customerId);
+    console.log(`[BaseHandler] Verified step: ${verifyStep}`);
   }
 
   /**

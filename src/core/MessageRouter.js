@@ -26,18 +26,25 @@ class MessageRouter {
    * @returns {Promise<string|Object>} Response message
    */
   async route(customerId, message, step) {
+    console.log(
+      `[MessageRouter] Routing - Step: ${step}, Message: "${message}"`
+    );
+
     // Admin commands (start with /)
     if (message.startsWith("/")) {
+      console.log(`[MessageRouter] -> Admin handler`);
       return await this.handlers.admin.handle(customerId, message);
     }
 
     // Global customer commands (accessible from any step)
     if (this.isGlobalCommand(message)) {
+      console.log(`[MessageRouter] -> Global command: ${message}`);
       return await this.handlers.customer.handle(customerId, message, step);
     }
 
     // Payment-related steps
     if (step === SessionSteps.SELECT_PAYMENT) {
+      console.log(`[MessageRouter] -> Payment selection handler`);
       return await this.handlers.payment.handlePaymentSelection(
         customerId,
         message
@@ -45,10 +52,12 @@ class MessageRouter {
     }
 
     if (step === SessionSteps.SELECT_BANK) {
+      console.log(`[MessageRouter] -> Bank selection handler`);
       return await this.handlers.payment.handleBankChoice(customerId, message);
     }
 
     // Customer flow based on step
+    console.log(`[MessageRouter] -> Customer handler (step: ${step})`);
     return await this.handlers.customer.handle(customerId, message, step);
   }
 

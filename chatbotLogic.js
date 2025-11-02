@@ -76,6 +76,10 @@ class ChatbotLogic {
       const step = await this.sessionManager.getStep(customerId);
       const normalizedMessage = sanitizedMessage.toLowerCase().trim();
 
+      console.log(`[ChatbotLogic] Customer: ${customerId}`);
+      console.log(`[ChatbotLogic] Message: "${normalizedMessage}"`);
+      console.log(`[ChatbotLogic] Current step: ${step}`);
+
       // Route message to appropriate handler
       const response = await this.router.route(
         customerId,
@@ -83,11 +87,7 @@ class ChatbotLogic {
         step
       );
 
-      // Log successful message processing
-      this.logger.logMessage(customerId, "message_processed", {
-        step,
-        messageLength: message.length,
-      });
+      console.log(`[ChatbotLogic] Response type: ${typeof response}`);
 
       return response;
     } catch (error) {
