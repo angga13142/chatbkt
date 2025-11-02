@@ -7,14 +7,17 @@ Sistem inventory management yang memungkinkan admin menambahkan product credenti
 ## Features
 
 ### 1. Add Single Credential
+
 Admin dapat menambahkan 1 akun sekaligus.
 
 **Command:**
+
 ```
 /addstock <product-id> <email:password>
 ```
 
 **Examples:**
+
 ```
 /addstock netflix premium@netflix.com:Password123!
 /addstock spotify music@domain.com:Spotify456!
@@ -22,11 +25,13 @@ Admin dapat menambahkan 1 akun sekaligus.
 ```
 
 **Supported Formats:**
+
 - `email:password` (recommended)
 - `email|password`
 - `email,password`
 
 **Response:**
+
 ```
 ✅ Credentials berhasil ditambahkan!
 
@@ -39,19 +44,23 @@ Admin dapat menambahkan 1 akun sekaligus.
 ---
 
 ### 2. Bulk Add Credentials
+
 Admin dapat menambahkan banyak akun sekaligus (multi-line input).
 
 **Command:**
+
 ```
 /addstock-bulk <product-id>
 ```
 
 **Example:**
+
 ```
 /addstock-bulk netflix
 ```
 
 **Bot Response:**
+
 ```
 📝 Mode Bulk Add untuk: netflix
 
@@ -62,15 +71,18 @@ Format per baris:
 
 Contoh:
 ```
+
 premium1@netflix.com:Pass123!
 premium2@netflix.com:Secret456!
 premium3@netflix.com:Secure789!
+
 ```
 
 Kirim "done" atau "selesai" jika sudah selesai.
 ```
 
 **Admin Sends:**
+
 ```
 premium1@netflix.com:Pass123!
 premium2@netflix.com:Secret456!
@@ -80,6 +92,7 @@ premium5@netflix.com:Secure2024!
 ```
 
 **Bot Response:**
+
 ```
 ✅ Bulk add berhasil!
 
@@ -94,6 +107,7 @@ Kirim lagi untuk tambah, atau "done" untuk selesai.
 **Admin Sends:** `done`
 
 **Bot Response:**
+
 ```
 ✅ Bulk add selesai! Gunakan /stockreport untuk melihat stok.
 ```
@@ -101,14 +115,17 @@ Kirim lagi untuk tambah, atau "done" untuk selesai.
 ---
 
 ### 3. Stock Report
+
 Lihat stok semua produk.
 
 **Command:**
+
 ```
 /stockreport
 ```
 
 **Response:**
+
 ```
 📊 LAPORAN STOK
 
@@ -122,6 +139,7 @@ Lihat stok semua produk.
 ```
 
 **Stock Indicators:**
+
 - 🔴 = 0 (habis)
 - 🟡 = 1-4 (low stock)
 - 🟢 = 5+ (available)
@@ -129,14 +147,17 @@ Lihat stok semua produk.
 ---
 
 ### 4. Sales Report
+
 Laporan penjualan dalam periode tertentu.
 
 **Command:**
+
 ```
 /salesreport [days]
 ```
 
 **Examples:**
+
 ```
 /salesreport          # Default: 7 days
 /salesreport 30       # Last 30 days
@@ -144,6 +165,7 @@ Laporan penjualan dalam periode tertentu.
 ```
 
 **Response:**
+
 ```
 📊 SALES REPORT
 Last 7 days
@@ -184,6 +206,7 @@ chatbot/
 ### How It Works
 
 **Adding Credentials:**
+
 1. Admin sends `/addstock netflix email:password`
 2. System validates:
    - Admin authorization (checks against ADMIN_NUMBER_1/2/3)
@@ -194,6 +217,7 @@ chatbot/
 5. Stock count updated
 
 **Selling Credentials:**
+
 1. Customer completes checkout
 2. `productDelivery.js` reads first line of `netflix.txt`
 3. Credential sent to customer
@@ -204,20 +228,24 @@ chatbot/
 ### Security Features
 
 **1. Input Sanitization:**
+
 - Product ID sanitized to prevent path traversal
 - Only alphanumeric, dash, and underscore allowed
 - Example: `../../../etc/passwd` → `etcpasswd`
 
 **2. Admin Authorization:**
+
 - Commands only work for whitelisted admin numbers
 - Checked against env vars: `ADMIN_NUMBER_1`, `ADMIN_NUMBER_2`, `ADMIN_NUMBER_3`
 
 **3. Transaction Logging:**
+
 - Every inventory operation logged with unique transaction ID
 - Uses Node.js `AsyncLocalStorage` for transaction tracking
 - Format: `[TXN-timestamp-random] action: {data}`
 
 **4. Credential Validation:**
+
 - Must contain separator (`:`, `|`, or `,`)
 - Minimum length: 10 characters
 - Cannot be empty
@@ -239,6 +267,7 @@ Located in: `products_data/sold/`
 **Filename:** `<product-id>_<order-id>_<timestamp>.txt`
 
 **Content (JSON):**
+
 ```json
 {
   "productId": "netflix",
@@ -261,34 +290,42 @@ Located: `src/services/inventory/InventoryManager.js`
 #### Methods
 
 **`addCredentials(productId, credentials, adminId)`**
+
 - Add single credential
 - Returns: `{ success: bool, productId, stockCount, message, error? }`
 
 **`addBulkCredentials(productId, credentialsList, adminId)`**
+
 - Add multiple credentials
 - Returns: `{ success: bool, productId, validCount, invalidCount, stockCount, errors?, message }`
 
 **`getStockCount(productId)`**
+
 - Get current stock for one product
 - Returns: `number`
 
 **`getAllStockCounts()`**
+
 - Get stock for all products
 - Returns: `{ productId: count, ... }`
 
 **`archiveSoldCredential(productId, credentials, orderId, customerId)`**
+
 - Archive sold credential to sales ledger
 - Returns: `{ success: bool, error? }`
 
 **`getSalesReport(days)`**
+
 - Get sales report for specified period
 - Returns: `{ period, totalSales, salesByProduct }`
 
 **`validateCredentials(credentials)`**
+
 - Validate credential format
 - Returns: `{ valid: bool, error? }`
 
 **`sanitizeProductId(productId)`**
+
 - Sanitize product ID (security)
 - Returns: `string` (safe product ID)
 
@@ -299,21 +336,25 @@ Located: `src/services/inventory/InventoryManager.js`
 ### For Admins
 
 1. **Use descriptive emails:**
+
    ```
    ✅ premium-01@netflix.com:Pass123!
    ❌ a@b.com:x
    ```
 
 2. **Strong passwords:**
+
    - Mix uppercase, lowercase, numbers, symbols
    - Minimum 8 characters
 
 3. **Bulk add for efficiency:**
+
    - Use `/addstock-bulk` for 5+ accounts
    - Prepare list in text editor first
    - Copy-paste to WhatsApp
 
 4. **Monitor stock:**
+
    - Check `/stockreport` daily
    - Restock before reaching 0
    - Set alerts for low stock
@@ -326,20 +367,24 @@ Located: `src/services/inventory/InventoryManager.js`
 ### For Developers
 
 1. **Never expose credentials in logs:**
+
    - Log only metadata (count, product ID)
    - Credentials only in encrypted files
 
 2. **Validate all inputs:**
+
    - Sanitize product IDs
    - Validate credential formats
    - Check admin authorization
 
 3. **Use transactions:**
+
    - Wrap operations in AsyncLocalStorage
    - Log all state changes
    - Enable audit trails
 
 4. **Handle concurrency:**
+
    - File operations are atomic
    - FIFO queue prevents race conditions
    - Use file locking if needed
@@ -358,6 +403,7 @@ Located: `src/services/inventory/InventoryManager.js`
 **Cause:** Missing separator or invalid format
 
 **Solution:**
+
 ```
 ❌ email password        # Missing separator
 ❌ email:                # Missing password
@@ -370,11 +416,13 @@ Located: `src/services/inventory/InventoryManager.js`
 ### Problem: Credential not delivered
 
 **Possible causes:**
+
 1. File doesn't exist → Check `products_data/netflix.txt`
 2. File is empty → Run `/stockreport` to verify
 3. Wrong product ID → Product ID must match exactly
 
 **Solution:**
+
 ```bash
 # Check if file exists
 ls -la products_data/netflix.txt
@@ -393,6 +441,7 @@ cat products_data/netflix.txt
 **Cause:** Not in admin whitelist
 
 **Solution:** Add your number to `.env`:
+
 ```
 ADMIN_NUMBER_1=6281234567890
 ADMIN_NUMBER_2=6289876543210
@@ -406,6 +455,7 @@ Restart bot after changing `.env`.
 ### Problem: Bulk add shows errors
 
 **Example:**
+
 ```
 ⚠️ Error (3 pertama):
 • Line 1: Credentials too short
@@ -422,11 +472,13 @@ Restart bot after changing `.env`.
 Test suite: `tests/test-inventory-management.js`
 
 **Run tests:**
+
 ```bash
 npm test -- tests/test-inventory-management.js
 ```
 
 **Test coverage:**
+
 - ✅ Add single credential
 - ✅ Add bulk credentials
 - ✅ Get stock count
@@ -445,6 +497,7 @@ npm test -- tests/test-inventory-management.js
 ### From Manual File Editing
 
 **Before:**
+
 ```bash
 ssh user@server
 cd /path/to/chatbot
@@ -454,12 +507,14 @@ nano products_data/netflix.txt
 ```
 
 **After:**
+
 ```
 # From WhatsApp
 /addstock netflix premium@netflix.com:Pass123!
 ```
 
 **Benefits:**
+
 - ⚡ Faster (no SSH needed)
 - 📱 Mobile-friendly
 - 🔒 Secure (admin-only)
@@ -471,6 +526,7 @@ nano products_data/netflix.txt
 ## Roadmap
 
 ### Completed ✅
+
 - [x] Add single credential via WhatsApp
 - [x] Add bulk credentials
 - [x] Stock reporting
@@ -480,6 +536,7 @@ nano products_data/netflix.txt
 - [x] Test suite
 
 ### Planned 🔄
+
 - [ ] Low stock alerts (automatic notifications)
 - [ ] Scheduled stock reports (daily digest)
 - [ ] Export sales report (CSV/Excel)
@@ -492,12 +549,14 @@ nano products_data/netflix.txt
 ## Support
 
 For issues or questions:
+
 1. Check troubleshooting section above
 2. Review transaction logs: `logs/inventory_transactions.log`
 3. Run test suite: `npm test -- tests/test-inventory-management.js`
 4. Contact developer
 
 **Admin commands help:**
+
 ```
 /help
 ```

@@ -7,22 +7,27 @@ Sekarang Anda bisa **input akun produk langsung dari WhatsApp**, tanpa perlu SSH
 ## Cara Pakai
 
 ### Input 1 Akun
+
 ```
 /addstock netflix premium@netflix.com:Pass123!
 ```
 
 ### Input Banyak Akun
+
 ```
 /addstock-bulk netflix
 ```
+
 Lalu kirim daftar akun (satu per baris), kirim `done` kalau selesai.
 
 ### Cek Stok
+
 ```
 /stockreport
 ```
 
 ### Laporan Penjualan
+
 ```
 /salesreport
 /salesreport 30
@@ -52,6 +57,7 @@ npm test -- tests/test-inventory-management.js
 ## Implementasi
 
 Fitur ini mengikuti **Node.js Best Practices**:
+
 - AsyncLocalStorage untuk transaction tracking
 - Secure file operations
 - crypto.randomBytes untuk unique IDs
@@ -79,17 +85,18 @@ products_data/sold/
 
 ## Benefits
 
-| Before (Manual) | After (WhatsApp) |
-|----------------|------------------|
-| SSH ke server | Chat dari WhatsApp |
-| Edit file dengan nano | Kirim command |
-| 5-10 menit | 10 detik |
-| Tidak ada audit trail | Semua tercatat |
-| Rawan typo | Validated otomatis |
+| Before (Manual)       | After (WhatsApp)   |
+| --------------------- | ------------------ |
+| SSH ke server         | Chat dari WhatsApp |
+| Edit file dengan nano | Kirim command      |
+| 5-10 menit            | 10 detik           |
+| Tidak ada audit trail | Semua tercatat     |
+| Rawan typo            | Validated otomatis |
 
 ## Next Steps
 
 Untuk mulai pakai:
+
 1. Pastikan nomor Anda di `.env` sebagai admin
 2. Restart bot jika baru tambah admin
 3. Test dengan `/addstock test-product email:password`

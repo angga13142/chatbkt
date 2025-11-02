@@ -1,7 +1,7 @@
 /**
  * Inventory Manager
  * Manages product credentials with transaction logging and security
- * Following Node.js best practices for file operations
+ * Uses Redis for high-performance FIFO queue with file fallback
  */
 
 const fs = require("fs").promises;
@@ -9,16 +9,45 @@ const fsSync = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { AsyncLocalStorage } = require("async_hooks");
+const RedisInventoryStorage = require("./RedisInventoryStorage");
 
 class InventoryManager {
-  constructor() {
+  constructor(redisClient = null) {
     this.productsDataDir = "./products_data";
     this.soldDataDir = "./products_data/sold";
     this.logFile = "./logs/inventory_transactions.log";
     this.als = new AsyncLocalStorage();
 
-    // Ensure directories exist
+    // Redis storage (primary)
+    this.redisStorage = null;
+    this.useRedis = false;
+
+    // Initialize Redis if available
+    if (redisClient) {
+      this.redisStorage = new RedisInventoryStorage(redisClient);
+      this.initializeRedis();
+    }
+
+    // Ensure directories exist (fallback)
     this.initializeDirectories();
+  }
+
+  /**
+   * Initialize Redis storage
+   */
+  async initializeRedis() {
+    try {
+      const initialized = await this.redisStorage.initialize();
+      if (initialized) {
+        this.useRedis = true;
+        console.log("✅ InventoryManager: Using Redis storage");
+      } else {
+        console.log("⚠️  InventoryManager: Falling back to file storage");
+      }
+    } catch (error) {
+      console.error("❌ Redis initialization failed:", error.message);
+      console.log("⚠️  InventoryManager: Using file storage");
+    }
   }
 
   /**
@@ -118,24 +147,29 @@ class InventoryManager {
    * @returns {Object} Result
    */
   async addCredentials(productId, credentials, adminId) {
+    // Sanitize product ID
+    const safeProductId = this.sanitizeProductId(productId);
+
+    // Validate credentials
+    const validation = this.validateCredentials(credentials);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
+    }
+
+    // Use Redis if available, otherwise fall back to file
+    if (this.useRedis && this.redisStorage.ready()) {
+      return await this.redisStorage.addCredentials(
+        safeProductId,
+        credentials.trim(),
+        adminId
+      );
+    }
+
+    // File-based fallback
     const transactionId = this.generateTransactionId();
 
     return this.als.run({ transactionId }, async () => {
       try {
-        // Sanitize product ID
-        const safeProductId = this.sanitizeProductId(productId);
-
-        // Validate credentials
-        const validation = this.validateCredentials(credentials);
-        if (!validation.valid) {
-          await this.logTransaction("ADD_CREDENTIALS_FAILED", {
-            productId: safeProductId,
-            adminId,
-            error: validation.error,
-          });
-          return { success: false, error: validation.error };
-        }
-
         // Get file path
         const filepath = path.join(
           this.productsDataDir,

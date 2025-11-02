@@ -5,6 +5,7 @@
 ## Response Guidelines
 
 ### ❌ AVOID in Chat Responses:
+
 1. Panjang lebar ringkasan
 2. Dokumentasi yang tidak diminta
 3. Penjelasan berlebihan
@@ -12,12 +13,14 @@
 5. Repeating what was done
 
 ### ✅ PREFERRED in Chat:
+
 1. Respon singkat & to the point
 2. Hanya informasi penting
 3. Status update minimal
 4. Konfirmasi selesai
 
 ### 💾 Save to Memory Instead:
+
 - Semua detail implementasi
 - Technical decisions
 - Bug fixes & solutions
@@ -53,6 +56,7 @@ Memory updated: current-state.md
 ```
 
 ## Action Items:
+
 - ✅ Update memory files ALWAYS
 - ✅ Keep chat responses SHORT
 - ❌ NO documentation unless requested
