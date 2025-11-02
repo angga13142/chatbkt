@@ -7,12 +7,14 @@ const BaseHandler = require("./BaseHandler");
 const InputValidator = require("../../lib/inputValidator");
 const UIMessages = require("../../lib/uiMessages");
 const AIHandler = require("./AIHandler");
+const AdminStatsService = require("../services/admin/AdminStatsService");
 
 class AdminHandler extends BaseHandler {
   constructor(sessionManager, xenditService, logger = null) {
     super(sessionManager, logger);
     this.xenditService = xenditService;
     this.aiHandler = new AIHandler(undefined, undefined, logger);
+    this.statsService = new AdminStatsService();
   }
 
   /**
@@ -215,98 +217,9 @@ class AdminHandler extends BaseHandler {
    * /stats - Show statistics (orders, revenue, active sessions)
    */
   async handleStats(adminId) {
-    const fs = require("fs");
-    const path = require("path");
-    const logsDir = path.join(process.cwd(), "logs");
-
     try {
-      // Get active sessions
-      const activeSessions = this.sessionManager.getActiveSessionCount
-        ? await this.sessionManager.getActiveSessionCount()
-        : 0;
-
-      // Parse transaction logs
-      const now = new Date();
-      const todayStr = now.toISOString().split("T")[0];
-      const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-      const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
-
-      let ordersToday = 0,
-        ordersWeek = 0,
-        ordersMonth = 0;
-      let revenueToday = 0,
-        revenueWeek = 0,
-        revenueMonth = 0;
-      let errorCount = 0,
-        totalLogs = 0;
-
-      // Read order logs
-      if (fs.existsSync(logsDir)) {
-        const logFiles = fs
-          .readdirSync(logsDir)
-          .filter((f) => f.startsWith("orders-"));
-
-        logFiles.forEach((file) => {
-          const content = fs.readFileSync(path.join(logsDir, file), "utf-8");
-          const lines = content.split("\n").filter((line) => line.trim());
-
-          lines.forEach((line) => {
-            totalLogs++;
-            try {
-              const log = JSON.parse(line);
-              const logDate = new Date(log.timestamp);
-
-              if (log.event === "order_created") {
-                const revenue = log.metadata.totalPrice || 0;
-
-                if (log.timestamp.startsWith(todayStr)) {
-                  ordersToday++;
-                  revenueToday += revenue;
-                }
-                if (logDate >= weekAgo) {
-                  ordersWeek++;
-                  revenueWeek += revenue;
-                }
-                if (logDate >= monthAgo) {
-                  ordersMonth++;
-                  revenueMonth += revenue;
-                }
-              }
-            } catch {
-              errorCount++;
-            }
-          });
-        });
-
-        // Read error logs
-        const errorLogFiles = fs
-          .readdirSync(logsDir)
-          .filter((f) => f.startsWith("errors-"));
-        errorLogFiles.forEach((file) => {
-          const content = fs.readFileSync(path.join(logsDir, file), "utf-8");
-          const lines = content.split("\n").filter((line) => line.trim());
-          errorCount += lines.length;
-          totalLogs += lines.length;
-        });
-      }
-
-      const errorRate =
-        totalLogs > 0 ? ((errorCount / totalLogs) * 100).toFixed(2) : "0.00";
-
-      // Format response
-      let response = `📊 *Admin Statistics*\n\n`;
-      response += `👥 *Active Sessions:* ${activeSessions}\n\n`;
-      response += `📦 *Orders*\n`;
-      response += `• Today: ${ordersToday}\n`;
-      response += `• This Week: ${ordersWeek}\n`;
-      response += `• This Month: ${ordersMonth}\n\n`;
-      response += `💰 *Revenue (IDR)*\n`;
-      response += `• Today: ${this.formatIDR(revenueToday)}\n`;
-      response += `• This Week: ${this.formatIDR(revenueWeek)}\n`;
-      response += `• This Month: ${this.formatIDR(revenueMonth)}\n\n`;
-      response += `📊 *System Health*\n`;
-      response += `• Error Rate: ${errorRate}%\n`;
-      response += `• Total Logs: ${totalLogs}`;
+      const stats = await this.statsService.getStats(this.sessionManager);
+      const response = AdminStatsService.formatStatsMessage(stats);
 
       this.log(adminId, "stats_viewed");
       return response;
@@ -736,13 +649,6 @@ class AdminHandler extends BaseHandler {
     message += "• /generate-desc <productId> - Generate product description";
 
     return message;
-  }
-
-  /**
-   * Format IDR currency
-   */
-  formatIDR(amount) {
-    return "Rp " + amount.toLocaleString("id-ID");
   }
 }
 
