@@ -47,6 +47,16 @@ class MockSessionManager {
     session.cart = [];
   }
 
+  set(customerId, key, value) {
+    const session = this.getSession(customerId);
+    session[key] = value;
+  }
+
+  get(customerId, key) {
+    const session = this.getSession(customerId);
+    return session[key];
+  }
+
   getOrders(customerId) {
     return this.getSession(customerId).orders;
   }

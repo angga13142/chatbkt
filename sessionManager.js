@@ -80,6 +80,8 @@ class SessionManager {
         customerId,
         cart: [],
         wishlist: [], // Wishlist feature (Phase 2)
+        promoCode: null, // Promo code feature (Phase 2)
+        discountPercent: 0, // Promo discount percentage (Phase 2)
         step: "menu",
         orderId: null,
         qrisInvoiceId: null,
@@ -198,6 +200,29 @@ class SessionManager {
   async getStep(customerId) {
     const session = await this.getSession(customerId);
     return session.step;
+  }
+
+  /**
+   * Generic set method for session properties
+   * @param {string} customerId
+   * @param {string} key
+   * @param {any} value
+   */
+  async set(customerId, key, value) {
+    const session = await this.getSession(customerId);
+    session[key] = value;
+    await this._updateSession(customerId, session);
+  }
+
+  /**
+   * Generic get method for session properties
+   * @param {string} customerId
+   * @param {string} key
+   * @returns {any} Value
+   */
+  async get(customerId, key) {
+    const session = await this.getSession(customerId);
+    return session[key];
   }
 
   /**

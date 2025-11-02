@@ -9,6 +9,8 @@ const UIMessages = require("../../lib/uiMessages");
 const AIHandler = require("./AIHandler");
 const AdminStatsService = require("../services/admin/AdminStatsService");
 const AdminInventoryHandler = require("./AdminInventoryHandler");
+const AdminPromoHandler = require("./AdminPromoHandler");
+const PromoService = require("../services/promo/PromoService");
 
 class AdminHandler extends BaseHandler {
   constructor(sessionManager, xenditService, logger = null) {
@@ -17,6 +19,12 @@ class AdminHandler extends BaseHandler {
     this.aiHandler = new AIHandler(undefined, undefined, logger);
     this.statsService = new AdminStatsService();
     this.inventoryHandler = new AdminInventoryHandler(sessionManager, logger);
+    this.promoService = new PromoService();
+    this.promoHandler = new AdminPromoHandler(
+      sessionManager,
+      this.promoService,
+      logger
+    );
   }
 
   /**
@@ -89,6 +97,22 @@ class AdminHandler extends BaseHandler {
 
       if (message.startsWith("/salesreport")) {
         return await this.inventoryHandler.handleSalesReport(adminId, message);
+      }
+
+      if (message.startsWith("/createpromo ")) {
+        return this.promoHandler.handleCreatePromo(adminId, message);
+      }
+
+      if (message.startsWith("/listpromos")) {
+        return this.promoHandler.handleListPromos(adminId);
+      }
+
+      if (message.startsWith("/deletepromo ")) {
+        return this.promoHandler.handleDeletePromo(adminId, message);
+      }
+
+      if (message.startsWith("/promostats ")) {
+        return this.promoHandler.handlePromoStats(adminId, message);
       }
 
       // Check if admin is in bulk add mode
@@ -652,6 +676,7 @@ class AdminHandler extends BaseHandler {
   }
 
   // Inventory management methods moved to AdminInventoryHandler
+  // Promo code methods moved to AdminPromoHandler
 
   /**
    * Show admin help menu
@@ -663,6 +688,11 @@ class AdminHandler extends BaseHandler {
     message += "• /stats - View statistics\n\n";
     message += "📢 *Communication:*\n";
     message += "• /broadcast <msg> - Send to all users\n\n";
+    message += "💰 *Promo Management:*\n";
+    message += "• /createpromo CODE DISC DAYS - Create promo\n";
+    message += "• /listpromos - List all promos\n";
+    message += "• /deletepromo CODE - Delete promo\n";
+    message += "• /promostats CODE - Promo stats\n\n";
     message += "📊 *System:*\n";
     message += "• /status - System status\n";
     message += "• /settings - Manage settings\n\n";

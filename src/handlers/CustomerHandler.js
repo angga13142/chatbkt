@@ -15,6 +15,7 @@ const { SessionSteps } = require("../utils/Constants");
 const AIHandler = require("./AIHandler");
 const OrderService = require("../services/order/OrderService");
 const WishlistService = require("../services/wishlist/WishlistService");
+const PromoService = require("../services/promo/PromoService");
 
 class CustomerHandler extends BaseHandler {
   constructor(sessionManager, paymentHandlers, logger = null) {
@@ -23,6 +24,7 @@ class CustomerHandler extends BaseHandler {
     this.aiHandler = new AIHandler(undefined, undefined, logger);
     this.orderService = new OrderService();
     this.wishlistService = new WishlistService(sessionManager);
+    this.promoService = new PromoService();
   }
 
   /**
@@ -267,6 +269,8 @@ class CustomerHandler extends BaseHandler {
 
     if (message === "clear") {
       await this.sessionManager.clearCart(customerId);
+      await this.sessionManager.set(customerId, "promoCode", null);
+      await this.sessionManager.set(customerId, "discountPercent", 0);
       await this.setStep(customerId, SessionSteps.MENU);
 
       this.log(customerId, "cart_cleared");
@@ -277,8 +281,74 @@ class CustomerHandler extends BaseHandler {
       };
     }
 
+    // Handle promo code: "promo CODE"
+    if (message && message.toLowerCase().startsWith("promo ")) {
+      const promoCode = message.substring(6).trim();
+      return await this.handleApplyPromo(customerId, promoCode);
+    }
+
     return {
       message: UIMessages.checkoutPrompt(),
+      qrisData: null,
+    };
+  }
+
+  /**
+   * Apply promo code
+   */
+  async handleApplyPromo(customerId, promoCode) {
+    const validation = this.promoService.validatePromo(promoCode, customerId);
+
+    if (!validation.valid) {
+      return {
+        message: validation.message,
+        qrisData: null,
+      };
+    }
+
+    // Store promo code in session (don't apply yet, apply at final payment)
+    await this.sessionManager.set(
+      customerId,
+      "promoCode",
+      promoCode.toUpperCase()
+    );
+    await this.sessionManager.set(
+      customerId,
+      "discountPercent",
+      validation.discountPercent
+    );
+
+    const cart = await this.sessionManager.getCart(customerId);
+    const totalIDR = cart.reduce((sum, item) => sum + item.price, 0);
+    const discount = this.promoService.calculateDiscount(
+      totalIDR,
+      validation.discountPercent
+    );
+
+    let response = `✅ *Kode Promo Diterapkan!*\n\n`;
+    response += `🎟️ Kode: ${promoCode.toUpperCase()}\n`;
+    response += `💰 Diskon: ${validation.discountPercent}%\n\n`;
+    response += `━━━━━━━━━━━━━━━━━━\n`;
+    response += `💵 Subtotal: Rp ${discount.originalAmount.toLocaleString(
+      "id-ID"
+    )}\n`;
+    response += `🎁 Diskon: -Rp ${discount.discountAmount.toLocaleString(
+      "id-ID"
+    )}\n`;
+    response += `💳 *Total: Rp ${discount.finalAmount.toLocaleString(
+      "id-ID"
+    )}*\n\n`;
+    response += `Ketik *checkout* untuk melanjutkan pembayaran.`;
+
+    this.log(customerId, "promo_applied", {
+      promoCode: promoCode.toUpperCase(),
+      discountPercent: validation.discountPercent,
+      originalAmount: discount.originalAmount,
+      finalAmount: discount.finalAmount,
+    });
+
+    return {
+      message: response,
       qrisData: null,
     };
   }
@@ -316,19 +386,62 @@ class CustomerHandler extends BaseHandler {
     const totalIDR = cart.reduce((sum, item) => sum + item.price, 0); // Price already in IDR
     const orderId = `ORD-${Date.now()}-${customerId.slice(-4)}`;
 
+    // Apply promo code if exists
+    const session = await this.sessionManager.getSession(customerId);
+    let promoCode = session.promoCode;
+    let discountPercent = session.discountPercent || 0;
+    let discountAmount = 0;
+    let finalAmount = totalIDR;
+
+    if (promoCode && discountPercent > 0) {
+      // Apply promo code (mark as used)
+      const applyResult = this.promoService.applyPromo(promoCode, customerId);
+
+      if (applyResult.success) {
+        const discount = this.promoService.calculateDiscount(
+          totalIDR,
+          discountPercent
+        );
+        discountAmount = discount.discountAmount;
+        finalAmount = discount.finalAmount;
+
+        this.log(customerId, "promo_code_applied", {
+          promoCode,
+          discountPercent,
+          originalAmount: totalIDR,
+          discountAmount,
+          finalAmount,
+        });
+      } else {
+        // Promo validation failed at checkout, clear it
+        promoCode = null;
+        discountPercent = 0;
+        await this.sessionManager.set(customerId, "promoCode", null);
+        await this.sessionManager.set(customerId, "discountPercent", 0);
+      }
+    }
+
     await this.sessionManager.setOrderId(customerId, orderId);
     await this.setStep(customerId, SessionSteps.SELECT_PAYMENT);
 
     this.log(customerId, "checkout_initiated", {
       orderId,
       itemCount: cart.length,
-      totalIDR,
+      totalIDR: finalAmount,
+      promoCode,
+      discountAmount,
     });
 
     const UIMessages = require("../../lib/uiMessages");
     const PaymentMessages = require("../../lib/paymentMessages");
 
-    const orderSummary = UIMessages.orderSummary(orderId, cart, totalIDR);
+    const orderSummary = UIMessages.orderSummary(
+      orderId,
+      cart,
+      finalAmount,
+      promoCode,
+      discountAmount
+    );
     const paymentMenu = PaymentMessages.paymentMethodSelection(orderId);
 
     return {
