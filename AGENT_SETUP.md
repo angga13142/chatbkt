@@ -5,6 +5,7 @@
 ### 1. Enable GitHub Actions
 
 The AI agent runs automatically on:
+
 - Every Pull Request (full review)
 - Every push to `main` (full test suite)
 - Daily at midnight (health check)
@@ -57,40 +58,47 @@ npm run analyze:complexity # Complexity report
 ## Agent Features
 
 ### 🔍 Quick Scan (< 2 min)
+
 - ✅ Linter checks
 - ✅ Secret detection
 - ✅ File size validation (max 700 lines)
 - ✅ Circular dependency check
 
 ### 🧐 Deep Review (5-10 min)
+
 - ✅ Code complexity analysis
 - ✅ Unused dependency detection
 - ✅ JSDoc coverage check
 - ✅ Naming convention validation
 
 ### 🧪 Testing Suite (10-20 min)
+
 - ✅ Unit tests (Node 18, 20)
 - ✅ Integration tests
 - ✅ Coverage reporting
 - ✅ Codecov integration
 
 ### 🔒 Security Audit (5-10 min)
+
 - ✅ NPM vulnerability scan
 - ✅ Secret scanning (TruffleHog)
 - ✅ Security pattern checks
 - ✅ Dependency audit
 
 ### 🐛 Bug Detection (5-10 min)
+
 - ✅ Unawaited promise detection
 - ✅ Missing error handling
 - ✅ Memory leak patterns
 - ✅ ESLint static analysis
 
 ### 📊 Performance Analysis
+
 - ✅ Bundle size monitoring
 - ✅ Large file detection
 
 ### 📋 Automated Reporting
+
 - ✅ PR comments with status
 - ✅ Daily health reports
 - ✅ Issue creation for critical problems
@@ -121,7 +129,7 @@ Comment on PR to trigger specific checks:
 @agent fix          - Auto-fix issues
 ```
 
-*(Note: Manual commands require GitHub Copilot integration)*
+_(Note: Manual commands require GitHub Copilot integration)_
 
 ## Configuration
 
@@ -133,15 +141,15 @@ module.exports = {
     node: true,
     es2021: true,
   },
-  extends: 'eslint:recommended',
+  extends: "eslint:recommended",
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: "latest",
   },
   rules: {
-    'no-unused-vars': 'warn',
-    'no-console': 'off',
-    'max-lines': ['error', { max: 700 }],
-    'complexity': ['warn', 10],
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "max-lines": ["error", { max: 700 }],
+    complexity: ["warn", 10],
   },
 };
 ```
@@ -162,25 +170,23 @@ module.exports = {
 
 ```javascript
 module.exports = {
-  testEnvironment: 'node',
+  testEnvironment: "node",
   coverageThreshold: {
     global: {
       branches: 70,
       functions: 70,
       lines: 70,
-      statements: 70
-    }
+      statements: 70,
+    },
   },
-  collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/**/*.test.js'
-  ]
+  collectCoverageFrom: ["src/**/*.js", "!src/**/*.test.js"],
 };
 ```
 
 ## Daily Health Check
 
 Runs at midnight UTC, checks:
+
 - Total lines of code
 - Average file size
 - TODOs/FIXMEs count
@@ -188,38 +194,43 @@ Runs at midnight UTC, checks:
 - Code trends (30 days)
 
 Creates issue if:
+
 - Health grade is D
 - TODOs exceed 20
 - Average file size > 700 lines
 
 ## Thresholds
 
-| Metric | Target | Warning | Critical |
-|--------|--------|---------|----------|
-| File Size | < 300 lines | 300-700 | > 700 |
-| Test Coverage | > 80% | 70-80% | < 70% |
-| Complexity | < 5 | 5-10 | > 10 |
-| Security Score | A | B-C | D-F |
-| Lint Errors | 0 | 1-5 | > 5 |
+| Metric         | Target      | Warning | Critical |
+| -------------- | ----------- | ------- | -------- |
+| File Size      | < 300 lines | 300-700 | > 700    |
+| Test Coverage  | > 80%       | 70-80%  | < 70%    |
+| Complexity     | < 5         | 5-10    | > 10     |
+| Security Score | A           | B-C     | D-F      |
+| Lint Errors    | 0           | 1-5     | > 5      |
 
 ## Troubleshooting
 
 ### "Agent checks failed"
+
 1. Run `npm run agent:test` locally
 2. Fix errors shown
 3. Commit and push again
 
 ### "File too large"
+
 1. Check file with `npm run check:size`
 2. Split file into smaller modules
 3. Follow modular architecture in `docs/MODULARIZATION.md`
 
 ### "Tests failing"
+
 1. Run `npm test` locally
 2. Fix failing tests
 3. Ensure coverage >= 70%
 
 ### "Security vulnerabilities"
+
 1. Run `npm audit`
 2. Run `npm audit fix` if safe
 3. Update dependencies manually if needed
@@ -227,11 +238,13 @@ Creates issue if:
 ## Best Practices
 
 1. **Before committing:**
+
    ```bash
    npm run agent:test
    ```
 
 2. **Before pushing:**
+
    ```bash
    npm run lint:fix
    npm run format
@@ -239,6 +252,7 @@ Creates issue if:
    ```
 
 3. **When creating PR:**
+
    - Write clear description
    - Link related issues
    - Wait for agent review
