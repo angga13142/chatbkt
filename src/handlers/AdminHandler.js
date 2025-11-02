@@ -6,11 +6,13 @@
 const BaseHandler = require("./BaseHandler");
 const InputValidator = require("../../lib/inputValidator");
 const UIMessages = require("../../lib/uiMessages");
+const AIHandler = require("./AIHandler");
 
 class AdminHandler extends BaseHandler {
   constructor(sessionManager, xenditService, logger = null) {
     super(sessionManager, logger);
     this.xenditService = xenditService;
+    this.aiHandler = new AIHandler(undefined, undefined, logger);
   }
 
   /**
@@ -63,6 +65,10 @@ class AdminHandler extends BaseHandler {
 
       if (message.startsWith("/settings")) {
         return await this.handleSettings(adminId, message);
+      }
+
+      if (message.startsWith("/generate-desc")) {
+        return await this.handleGenerateDescription(adminId, message);
       }
 
       // Unknown admin command
@@ -643,6 +649,64 @@ class AdminHandler extends BaseHandler {
   }
 
   /**
+   * /generate-desc <productId> - Generate AI product description
+   */
+  async handleGenerateDescription(adminId, message) {
+    const parts = message.split(" ");
+    if (parts.length < 2) {
+      return (
+        `📝 *GENERATE PRODUCT DESCRIPTION*\n\n` +
+        `Format: /generate-desc <productId>\n\n` +
+        `Contoh: /generate-desc netflix\n\n` +
+        `AI akan membuat deskripsi produk yang menarik dan persuasif.`
+      );
+    }
+
+    const productId = parts[1].toLowerCase();
+
+    this.logInfo(adminId, `Generating description for product: ${productId}`);
+
+    const result = await this.aiHandler.generateProductDescription(productId);
+
+    if (!result.success) {
+      return `❌ ${result.error}`;
+    }
+
+    // Format the generated description
+    let response = `🤖 *AI GENERATED DESCRIPTION*\n\n`;
+    response += `📦 Product: ${result.productName}\n\n`;
+
+    if (result.generated.title) {
+      response += `*Title:*\n${result.generated.title}\n\n`;
+    }
+
+    if (result.generated.description) {
+      response += `*Description:*\n${result.generated.description}\n\n`;
+    }
+
+    if (result.generated.features && result.generated.features.length > 0) {
+      response += `*Features:*\n`;
+      result.generated.features.forEach((feature, i) => {
+        response += `${i + 1}. ${feature}\n`;
+      });
+      response += "\n";
+    }
+
+    if (result.generated.cta) {
+      response += `*Call to Action:*\n${result.generated.cta}\n\n`;
+    }
+
+    if (result.generated.raw) {
+      response += `${result.generated.raw}\n\n`;
+    }
+
+    response += `---\n\n`;
+    response += `💡 Copy deskripsi di atas dan gunakan untuk update product catalog.`;
+
+    return response;
+  }
+
+  /**
    * Show admin help menu
    */
   showAdminHelp() {
@@ -659,7 +723,9 @@ class AdminHandler extends BaseHandler {
     message += "• /stock - View/update stock\n";
     message += "• /addproduct - Add product\n";
     message += "• /editproduct - Edit product\n";
-    message += "• /removeproduct - Remove product";
+    message += "• /removeproduct - Remove product\n\n";
+    message += "🤖 *AI Tools:*\n";
+    message += "• /generate-desc <productId> - Generate product description";
 
     return message;
   }

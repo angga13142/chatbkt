@@ -12,11 +12,14 @@ const {
 const UIMessages = require("../../lib/uiMessages");
 const FuzzySearch = require("../utils/FuzzySearch");
 const { SessionSteps } = require("../utils/Constants");
+const AIHandler = require("./AIHandler");
 
 class CustomerHandler extends BaseHandler {
   constructor(sessionManager, paymentHandlers, logger = null) {
     super(sessionManager, logger);
     this.paymentHandlers = paymentHandlers;
+    this.aiHandler = new AIHandler(undefined, undefined, logger);
+    this.fuzzySearch = new FuzzySearch();
   }
 
   /**
@@ -104,12 +107,43 @@ class CustomerHandler extends BaseHandler {
 
     // Try exact match by ID first
     let product = getProductById(message);
+    let fuzzyScore = 1.0; // Perfect match
 
     // If not found, try fuzzy search
     if (!product) {
-      product = FuzzySearch.search(allProducts, message, 3);
+      const fuzzyResults = this.fuzzySearch.search(message, allProducts);
+
+      if (fuzzyResults.length > 0) {
+        product = fuzzyResults[0].item;
+        fuzzyScore = fuzzyResults[0].score;
+
+        this.logInfo(
+          customerId,
+          `Fuzzy match: "${message}" -> "${
+            product.name
+          }" (score: ${fuzzyScore.toFixed(2)})`
+        );
+      }
     }
 
+    // Check if AI should handle this (low confidence or question)
+    if (this.aiHandler.shouldHandleMessage(message, fuzzyScore)) {
+      this.logInfo(customerId, `AI fallback triggered for: "${message}"`);
+
+      const cart = await this.sessionManager.getCart(customerId);
+      const aiResponse = await this.aiHandler.handleFallback({
+        customerId,
+        message,
+        context: {
+          step: SessionSteps.BROWSING,
+          cart,
+        },
+      });
+
+      return aiResponse;
+    }
+
+    // Product found with good confidence
     if (product) {
       await this.sessionManager.addToCart(customerId, product);
       const priceIDR = product.price * 15800;
@@ -118,11 +152,13 @@ class CustomerHandler extends BaseHandler {
         productId: product.id,
         productName: product.name,
         priceIDR,
+        fuzzyScore,
       });
 
       return UIMessages.productAdded(product.name, priceIDR);
     }
 
+    // No product found and AI didn't help
     this.log(customerId, "product_not_found", { query: message });
     return UIMessages.productNotFound();
   }
