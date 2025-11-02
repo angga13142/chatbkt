@@ -58,7 +58,7 @@ class ChatbotLogic {
       return UIMessages.invalidOption();
     }
 
-    const step = this.sessionManager.getStep(customerId);
+    const step = await this.sessionManager.getStep(customerId);
     const normalizedMessage = sanitizedMessage.toLowerCase().trim();
 
     // Handle admin commands
@@ -85,12 +85,12 @@ class ChatbotLogic {
 
     // Handle global commands
     if (normalizedMessage === "menu" || normalizedMessage === "help") {
-      this.sessionManager.setStep(customerId, "menu");
+      await this.sessionManager.setStep(customerId, "menu");
       return UIMessages.mainMenu();
     }
 
     if (normalizedMessage === "cart") {
-      return this.showCart(customerId);
+      return await this.showCart(customerId);
     }
 
     // Route to step handler
@@ -103,9 +103,9 @@ class ChatbotLogic {
   async routeToHandler(customerId, message, step) {
     switch (step) {
       case "menu":
-        return this.handleMenuSelection(customerId, message);
+        return await this.handleMenuSelection(customerId, message);
       case "browsing":
-        return this.handleProductSelection(customerId, message);
+        return await this.handleProductSelection(customerId, message);
       case "checkout":
         return await this.handleCheckout(customerId, message);
       case "select_payment":
@@ -127,14 +127,14 @@ class ChatbotLogic {
   /**
    * Handle main menu selection
    */
-  handleMenuSelection(customerId, message) {
+  async handleMenuSelection(customerId, message) {
     if (message === "1" || message === "browse" || message === "products") {
-      this.sessionManager.setStep(customerId, "browsing");
+      await this.sessionManager.setStep(customerId, "browsing");
       return this.showProducts();
     }
 
     if (message === "2" || message === "cart") {
-      return this.showCart(customerId);
+      return await this.showCart(customerId);
     }
 
     if (message === "3" || message === "about") {
@@ -159,7 +159,7 @@ class ChatbotLogic {
   /**
    * Handle product selection
    */
-  handleProductSelection(customerId, message) {
+  async handleProductSelection(customerId, message) {
     const allProducts = getAllProducts();
 
     // Try exact match by ID first
@@ -171,7 +171,7 @@ class ChatbotLogic {
     }
 
     if (product) {
-      this.sessionManager.addToCart(customerId, product);
+      await this.sessionManager.addToCart(customerId, product);
       const priceIDR = product.price * 15800;
       return UIMessages.productAdded(product.name, priceIDR);
     }
@@ -213,7 +213,6 @@ class ChatbotLogic {
       if (minDistance === 0) {
         // Perfect match, break early
         bestMatch = product;
-        bestScore = 0;
         break;
       }
 
@@ -283,12 +282,12 @@ class ChatbotLogic {
    */
   async handleCheckout(customerId, message) {
     if (message === "checkout" || message === "buy" || message === "order") {
-      return this.processCheckout(customerId);
+      return await this.processCheckout(customerId);
     }
 
     if (message === "clear") {
-      this.sessionManager.clearCart(customerId);
-      this.sessionManager.setStep(customerId, "menu");
+      await this.sessionManager.clearCart(customerId);
+      await this.sessionManager.setStep(customerId, "menu");
       return {
         message: UIMessages.cartCleared(),
         qrisData: null,
@@ -304,7 +303,7 @@ class ChatbotLogic {
   /**
    * Process checkout and show payment options
    */
-  processCheckout(customerId) {
+  async processCheckout(customerId) {
     // Check order rate limit
     const orderLimitCheck = this.validator.canPlaceOrder(customerId);
     if (!orderLimitCheck.allowed) {
@@ -322,7 +321,7 @@ class ChatbotLogic {
       };
     }
 
-    const cart = this.sessionManager.getCart(customerId);
+    const cart = await this.sessionManager.getCart(customerId);
 
     // Check stock availability
     const { isInStock } = require("./config");
@@ -347,8 +346,8 @@ class ChatbotLogic {
     const totalUSD = cart.reduce((sum, item) => sum + item.price, 0);
     const orderId = `ORD-${Date.now()}-${customerId.slice(-4)}`;
 
-    this.sessionManager.setOrderId(customerId, orderId);
-    this.sessionManager.setStep(customerId, "select_payment");
+    await this.sessionManager.setOrderId(customerId, orderId);
+    await this.sessionManager.setStep(customerId, "select_payment");
 
     const totalIDR = this.xenditService.convertToIDR(totalUSD);
 
@@ -404,13 +403,15 @@ class ChatbotLogic {
       return UIMessages.orderNotFound(approveOrderId);
     }
 
-    const step = this.sessionManager.getStep(targetCustomerId);
+    const step = await this.sessionManager.getStep(targetCustomerId);
     if (step !== "awaiting_admin_approval") {
       return UIMessages.orderNotPending(approveOrderId);
     }
 
     // Double-check payment status via Xendit API
-    const paymentData = this.sessionManager.getPaymentMethod(targetCustomerId);
+    const paymentData = await this.sessionManager.getPaymentMethod(
+      targetCustomerId
+    );
     if (paymentData.invoiceId) {
       try {
         const paymentStatus = await this.xenditService.checkPaymentStatus(
@@ -443,7 +444,7 @@ class ChatbotLogic {
       }
     }
 
-    const cart = this.sessionManager.getCart(targetCustomerId);
+    const cart = await this.sessionManager.getCart(targetCustomerId);
     const ProductDelivery = require("./productDelivery");
     const productDelivery = new ProductDelivery();
     const deliveryResult = productDelivery.deliverProducts(
@@ -479,8 +480,8 @@ class ChatbotLogic {
       console.log(`📦 Stock decremented for ${item.id}`);
     });
 
-    this.sessionManager.clearCart(targetCustomerId);
-    this.sessionManager.setStep(targetCustomerId, "menu");
+    await this.sessionManager.clearCart(targetCustomerId);
+    await this.sessionManager.setStep(targetCustomerId, "menu");
 
     return {
       message: UIMessages.approvalSuccess(approveOrderId),
