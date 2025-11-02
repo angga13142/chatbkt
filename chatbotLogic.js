@@ -3,22 +3,22 @@
  * Routes messages to appropriate handlers
  */
 
-const CustomerHandler = require('./src/handlers/CustomerHandler');
-const AdminHandler = require('./src/handlers/AdminHandler');
-const ProductHandler = require('./src/handlers/ProductHandler');
-const MessageRouter = require('./src/core/MessageRouter');
-const PaymentHandlers = require('./lib/paymentHandlers');
-const InputValidator = require('./lib/inputValidator');
-const TransactionLogger = require('./lib/transactionLogger');
-const XenditService = require('./services/xenditService');
-const { SessionSteps } = require('./src/utils/Constants');
+const CustomerHandler = require("./src/handlers/CustomerHandler");
+const AdminHandler = require("./src/handlers/AdminHandler");
+const ProductHandler = require("./src/handlers/ProductHandler");
+const MessageRouter = require("./src/core/MessageRouter");
+const PaymentHandlers = require("./lib/paymentHandlers");
+const InputValidator = require("./lib/inputValidator");
+const TransactionLogger = require("./lib/transactionLogger");
+const XenditService = require("./services/xenditService");
+const { SessionSteps } = require("./src/utils/Constants");
 
 class ChatbotLogic {
   constructor(sessionManager) {
     this.sessionManager = sessionManager;
     this.logger = new TransactionLogger();
     this.validator = new InputValidator();
-    
+
     // Initialize handlers
     this.customerHandler = new CustomerHandler(sessionManager, this.logger);
     this.adminHandler = new AdminHandler(sessionManager, this.logger);
@@ -33,7 +33,7 @@ class ChatbotLogic {
     this.router = new MessageRouter({
       customerHandler: this.customerHandler,
       adminHandler: this.adminHandler,
-      paymentHandlers: this.paymentHandlers
+      paymentHandlers: this.paymentHandlers,
     });
   }
 
@@ -49,7 +49,7 @@ class ChatbotLogic {
     if (!rateLimitCheck.allowed) {
       this.logger.logSecurity(
         customerId,
-        'rate_limit_exceeded',
+        "rate_limit_exceeded",
         rateLimitCheck.reason,
         { limit: this.validator.MESSAGE_LIMIT }
       );
@@ -65,10 +65,10 @@ class ChatbotLogic {
     // Validate and sanitize input
     const sanitizedMessage = InputValidator.sanitizeMessage(message);
     if (!sanitizedMessage) {
-      this.logger.logError(customerId, new Error('Invalid message'), {
-        original: message
+      this.logger.logError(customerId, new Error("Invalid message"), {
+        original: message,
       });
-      return '❌ Pesan tidak valid. Silakan coba lagi.';
+      return "❌ Pesan tidak valid. Silakan coba lagi.";
     }
 
     try {
@@ -84,25 +84,21 @@ class ChatbotLogic {
       );
 
       // Log successful message processing
-      this.logger.logMessage(customerId, 'message_processed', {
+      this.logger.logMessage(customerId, "message_processed", {
         step,
-        messageLength: message.length
+        messageLength: message.length,
       });
 
       return response;
-
     } catch (error) {
       this.logger.logError(customerId, error, {
         message: sanitizedMessage,
-        step: await this.sessionManager.getStep(customerId)
+        step: await this.sessionManager.getStep(customerId),
       });
 
-      // Add customer to cooldown on error
-      this.validator.addToCooldown(customerId);
-
       return (
-        '❌ Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi admin.\n\n' +
-        '💬 Ketik *menu* untuk kembali ke menu utama.'
+        "❌ Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi admin.\n\n" +
+        "💬 Ketik *menu* untuk kembali ke menu utama."
       );
     }
   }
@@ -115,7 +111,7 @@ class ChatbotLogic {
     const activeSessions = this.sessionManager.getActiveSessions();
     return {
       totalSessions: activeSessions.length,
-      activeCustomers: activeSessions.map(s => s.customerId)
+      activeCustomers: activeSessions.map((s) => s.customerId),
     };
   }
 
@@ -127,7 +123,7 @@ class ChatbotLogic {
    */
   async broadcast(message, client) {
     return await this.adminHandler.handleBroadcast(
-      'system',
+      "system",
       `/broadcast ${message}`,
       client
     );
