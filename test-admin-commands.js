@@ -203,7 +203,7 @@ async function runTests() {
     await sessionManager.getSession("6281111111112@c.us");
     await sessionManager.getSession("6281111111113@c.us");
 
-    const count = sessionManager.getActiveSessionCount();
+    const count = await sessionManager.getActiveSessionCount();
 
     if (count >= 3) {
       console.log(`✅ PASS: Session count correct: ${count}`);

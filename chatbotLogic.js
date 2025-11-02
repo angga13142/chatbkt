@@ -511,7 +511,7 @@ class ChatbotLogic {
     try {
       // Get active sessions
       const activeSessions = this.sessionManager.getActiveSessionCount
-        ? this.sessionManager.getActiveSessionCount()
+        ? await this.sessionManager.getActiveSessionCount()
         : 0;
 
       // Parse transaction logs
@@ -829,7 +829,7 @@ class ChatbotLogic {
     try {
       // Get all active customer IDs from session manager
       const activeCustomers = this.sessionManager.getAllCustomerIds
-        ? this.sessionManager.getAllCustomerIds()
+        ? await this.sessionManager.getAllCustomerIds()
         : [];
 
       if (activeCustomers.length === 0) {

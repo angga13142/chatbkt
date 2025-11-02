@@ -384,10 +384,39 @@ class SessionManager {
   }
 
   /**
-   * Get all active customer IDs
-   * @returns {Array} Array of customer IDs
+   * Get all active customer IDs (from both in-memory and Redis sessions)
+   * @async
+   * @returns {Promise<Array>} Array of customer IDs
    */
-  getAllCustomerIds() {
+  async getAllCustomerIds() {
+    if (this.useRedis) {
+      try {
+        // Use Redis SCAN to get all session keys
+        let cursor = "0";
+        const customerIds = new Set(Array.from(this.sessions.keys()));
+        do {
+          const result = await redisClient.scan(cursor, {
+            MATCH: "session:*",
+            COUNT: 100,
+          });
+          cursor = result.cursor;
+          for (const key of result.keys) {
+            // Extract customerId from "session:1234567890@c.us"
+            const match = key.match(/^session:(.+)$/);
+            if (match && match[1]) {
+              customerIds.add(match[1]);
+            }
+          }
+        } while (cursor !== "0");
+        return Array.from(customerIds);
+      } catch (error) {
+        console.error(
+          "Redis SCAN error in getAllCustomerIds, using in-memory keys:",
+          error.message
+        );
+        return Array.from(this.sessions.keys());
+      }
+    }
     return Array.from(this.sessions.keys());
   }
 }
