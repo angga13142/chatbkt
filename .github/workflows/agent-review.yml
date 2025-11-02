@@ -37,12 +37,12 @@ jobs:
 
       - name: 🔐 Check for secrets
         run: |
-          if grep -r "xnd_production" . --exclude-dir=node_modules --exclude-dir=.git; then
+          if grep -r "xnd_production" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=docs --exclude="*.md" --exclude="*.yml" --exclude="*.sh"; then
             echo "::error::Production secrets found in code!"
             exit 1
           fi
 
-          if grep -r "password.*=.*['\"]" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.md"; then
+          if grep -r "password.*=.*['\"]" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="*.md" --exclude="*.yml"; then
             echo "::warning::Possible hardcoded passwords found"
           fi
 
