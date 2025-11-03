@@ -10,6 +10,7 @@
 ### Current Structure (Post-Refactoring)
 
 **Main Components:**
+
 ```
 chatbot/
 ├── index.js (212 lines)        # Bootstrap, WhatsApp client, event handling
@@ -60,17 +61,20 @@ chatbot/
 ## 🎯 Critical Constraints
 
 ### GitHub Actions File Size Limits
+
 - **BLOCKING:** All files in `src/` must be < 700 lines
 - **Current Status:** ✅ All handlers compliant
   - AdminHandler: 614 lines (was 966)
   - CustomerHandler: 554 lines (was 854)
 
 ### VPS Resource Constraints
+
 - **Environment:** 1 vCPU, 2GB RAM
 - **Puppeteer Config:** Single process, no GPU, no 2D canvas
 - **Memory Management:** Cleanup intervals, session TTL
 
 ### Testing Requirements
+
 - **BLOCKING:** All 251 unit tests must pass
 - **Current Status:** ✅ 251/251 passing (100%)
 - **Run:** `npm test`
@@ -80,6 +84,7 @@ chatbot/
 ## 📊 Current Features
 
 ### Phase 1: Core Features ✅
+
 - Product browsing with fuzzy search
 - Shopping cart management
 - Multi-payment support (QRIS, E-wallet, Bank Transfer)
@@ -88,6 +93,7 @@ chatbot/
 - Payment reminders (cron-based)
 
 ### Phase 2: Advanced Features ✅
+
 - **Wishlist System** - Save, view, remove, move to cart
 - **Promo Code System** - Create, list, delete, apply discounts
 - **Review System** - Add reviews, view stats, delete (admin)
@@ -95,6 +101,7 @@ chatbot/
 - **Enhanced Dashboard** - Revenue analytics, top products
 
 ### Phase 3: Optimizations (Recent - Nov 3, 2025) ✅
+
 - **O(1) Command Routing** - Map-based lookup (from PR #1)
 - **Memory Leak Fix** - Proper interval cleanup
 - **Bug Fixes** - getAllSettings(), null handling
@@ -105,6 +112,7 @@ chatbot/
 ## 🔧 Configuration
 
 ### Environment Variables (.env)
+
 ```bash
 # Admin
 ADMIN_NUMBER=628...         # Admin WhatsApp number
@@ -131,6 +139,7 @@ LOG_LEVEL=INFO
 ```
 
 ### Product Catalog (config.js)
+
 ```javascript
 products: {
   premiumAccounts: [
@@ -150,6 +159,7 @@ products: {
 ## 🚀 Deployment
 
 ### Quick Start (VPS)
+
 ```bash
 # 1. Clone and setup
 git clone https://github.com/benihutapea/chatbot.git
@@ -167,10 +177,12 @@ pm2 logs whatsapp-shop
 ```
 
 ### Authentication Methods
+
 1. **QR Code** (default): Scan with WhatsApp app
 2. **Pairing Code**: Set `USE_PAIRING_CODE=true` + `PAIRING_PHONE_NUMBER`
 
 ### Monitoring
+
 ```bash
 pm2 status                    # Check status
 pm2 logs whatsapp-shop       # View logs
@@ -182,6 +194,7 @@ pm2 restart whatsapp-shop    # Restart bot
 ## 🧪 Testing
 
 ### Test Structure
+
 ```
 tests/
 ├── unit/                      # Unit tests (251 tests)
@@ -193,12 +206,14 @@ tests/
 ```
 
 ### Run Tests
+
 ```bash
 npm test                      # All 251 unit tests
 node tests/comprehensive-transaction-simulation.js  # E2E simulation
 ```
 
 ### Test Coverage
+
 - ✅ 251/251 unit tests passing
 - ✅ 23/24 E2E scenarios passing (95.8%)
 - ⚠️ 1 minor issue: Cart total calculation (test expectation, not bug)
@@ -208,14 +223,17 @@ node tests/comprehensive-transaction-simulation.js  # E2E simulation
 ## 📝 Recent Changes (Nov 3, 2025)
 
 ### Commits
+
 1. **0d8692b** - Refactoring complete: handlers < 700 lines
 2. **1e41522** - Cherry-pick fixes from PR #1 (Copilot agent)
 
 ### PR #1 Integration
+
 **From:** GitHub Copilot coding agent  
 **Status:** ✅ Cherry-picked (adapted to refactored architecture)
 
 **Changes Applied:**
+
 1. ✅ Bug Fix: Added `getAllSettings()` export in config.js
 2. ✅ Bug Fix: Null/undefined handling in AdminHandler
 3. ✅ Bug Fix: Memory leak - proper interval cleanup
@@ -223,6 +241,7 @@ node tests/comprehensive-transaction-simulation.js  # E2E simulation
 5. ✅ New Utilities: ErrorMessages.js, ValidationHelpers.js
 
 **Skipped (Optional):**
+
 - PerformanceMonitor.js
 - CacheManager.js
 - Logger.js
@@ -232,17 +251,20 @@ node tests/comprehensive-transaction-simulation.js  # E2E simulation
 ## 🎯 Development Guidelines
 
 ### File Size Management
+
 - **ALWAYS** check file size before commit
 - **SPLIT** handlers when approaching 650 lines
 - **EXTRACT** to specialized handlers using delegation pattern
 
 ### Adding New Commands
+
 1. Add to command routing map (`_initializeCommandRoutes()`)
 2. Create handler method or delegate to specialized handler
 3. Add tests (unit + integration)
 4. Run `npm test` before commit
 
 ### Code Quality
+
 ```bash
 npm run lint          # ESLint check
 npm test             # Run all tests
@@ -257,6 +279,7 @@ git push chatwhatsapp main  # Push to both repos
 ## 📚 Key Documentation Files
 
 ### Active Documentation (Keep Updated)
+
 - `README.md` - Quick start, features, deployment
 - `REFACTORING_COMPLETE.md` - Handler extraction summary
 - `.github/copilot-instructions.md` - AI agent guidelines
@@ -270,6 +293,7 @@ git push chatwhatsapp main  # Push to both repos
 - `docs/XENDIT_SETUP.md` - Payment gateway setup
 
 ### Archived Documentation
+
 - `docs/archive/testing/` - Historical test reports
 - `docs/archive/bug-reports/` - Fixed bug analyses
 
@@ -278,10 +302,12 @@ git push chatwhatsapp main  # Push to both repos
 ## 🔗 Repositories
 
 ### Primary
+
 - **benihutapea/chatbot** - Main development repository
 - **URL:** https://github.com/benihutapea/chatbot
 
 ### Fork
+
 - **yunaamelia/chatwhatsapp** - Production fork
 - **URL:** https://github.com/yunaamelia/chatwhatsapp
 - **Sync:** Push to both repos after changes
@@ -291,11 +317,13 @@ git push chatwhatsapp main  # Push to both repos
 ## ⚠️ Known Issues
 
 ### Minor Issues
+
 1. **Test Expectation Mismatch** - Cart total test expects USD $1, products use IDR Rp 15,800
    - **Impact:** Low (test configuration, not application bug)
    - **Status:** Documented, low priority fix
 
 ### Resolved Issues
+
 1. ✅ File size violations - FIXED (handlers < 700 lines)
 2. ✅ getAllSettings() missing - FIXED (PR #1)
 3. ✅ Memory leaks - FIXED (interval cleanup)
@@ -306,6 +334,7 @@ git push chatwhatsapp main  # Push to both repos
 ## 📈 Performance Metrics
 
 ### Current Performance
+
 - **Command Routing:** O(1) map lookup
 - **Session Cleanup:** Every 10 minutes
 - **Rate Limiting:** 20 messages/minute per customer
@@ -313,6 +342,7 @@ git push chatwhatsapp main  # Push to both repos
 - **Response Time:** < 100ms average
 
 ### Resource Usage (VPS)
+
 - **CPU:** < 10% average
 - **RAM:** ~50MB base + 14MB per process
 - **Disk:** ~200MB (node_modules + code)
@@ -322,16 +352,19 @@ git push chatwhatsapp main  # Push to both repos
 ## 🎯 Future Enhancements (Planned)
 
 ### High Priority
+
 1. TypeScript migration (type safety)
 2. Database migration (PostgreSQL for persistence)
 3. Webhook retry mechanism improvements
 
 ### Medium Priority
+
 1. Multi-language support (extend beyond Indonesian)
 2. Advanced analytics dashboard
 3. A/B testing framework
 
 ### Low Priority
+
 1. Automated E2E testing with Puppeteer
 2. Customer segmentation
 3. Revenue forecasting

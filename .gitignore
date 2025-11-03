@@ -1,5 +1,12 @@
-# Dependencies
+# Node modules
 node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -8,36 +15,25 @@ yarn-error.log*
 .wwebjs_auth/
 .wwebjs_cache/
 
-# Environment variables
-.env
+# Payment proofs
+payment_proofs/*
+!payment_proofs/.gitkeep
 
-# Logs
-logs/
-*.log
+# QRIS payment images
+payment_qris/*
+!payment_qris/.gitkeep
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# IDE files
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # Temporary files
-tmp/
-temp/
-
-# Test coverage
-coverage/
-.nyc_output/
-
-# Payment & Delivery
-payment_proofs/
-payment_qris/
-delivery.log
-
-# Product Data (keep structure, ignore credentials)
-products_data/*.txt
-!products_data/README.md
+*.tmp
+*.temp
