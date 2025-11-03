@@ -1,0 +1,8 @@
+{
+  "productId": "netflix",
+  "orderId": "ORD-1762152395898-c.us",
+  "customerId": "6285345902520@c.us",
+  "credentials": "netflix1@example.com:password123",
+  "soldAt": "2025-11-03T06:47:22.193Z",
+  "transactionId": "TXN-1762152442192-6b764b34"
+}
