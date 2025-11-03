@@ -1,4 +1,3 @@
-netflix4@example.com:password101
 netflix5@example.com:password102
 netflix6@example.com:password103
 netflix7@example.com:password104
