@@ -58,6 +58,9 @@ class AdminHandler extends BaseHandler {
    */
   _initializeCommandRoutes() {
     return {
+      // Help
+      "/help": () => this.showAdminHelp(),
+
       // Order & Communication
       "/approve": (adminId, msg) =>
         this.orderHandler.handleApprove(adminId, msg),
@@ -86,8 +89,7 @@ class AdminHandler extends BaseHandler {
         this.inventoryHandler.handleAddStockBulk(adminId, msg),
       "/addstock": (adminId, msg) =>
         this.inventoryHandler.handleAddStock(adminId, msg),
-      "/syncstock": (adminId) =>
-        this.inventoryHandler.handleSyncStock(adminId),
+      "/syncstock": (adminId) => this.inventoryHandler.handleSyncStock(adminId),
       "/stockreport": (adminId) =>
         this.inventoryHandler.handleStockReport(adminId),
       "/salesreport": (adminId, msg) =>
@@ -576,36 +578,54 @@ class AdminHandler extends BaseHandler {
    * Show admin help menu
    */
   showAdminHelp() {
-    let message = "👨‍💼 *ADMIN COMMANDS*\n\n";
-    message += "📦 *Order Management:*\n";
-    message += "• /approve <orderId> - Approve payment\n";
-    message += "• /stats [days] - Enhanced dashboard (default: 30 days)\n\n";
-    message += "📢 *Communication:*\n";
-    message += "• /broadcast <msg> - Send to all users\n\n";
-    message += "💰 *Promo Management:*\n";
-    message += "• /createpromo CODE DISC DAYS - Create promo\n";
-    message += "• /listpromos - List all promos\n";
-    message += "• /deletepromo CODE - Delete promo\n";
-    message += "• /promostats CODE - Promo stats\n\n";
-    message += "📊 *System:*\n";
-    message += "• /status - System status\n";
-    message += "• /settings - Manage settings\n\n";
-    message += "🛍️ *Product Management:*\n";
-    message += "• /stock - View/update stock\n";
-    message += "• /addproduct - Add product\n";
-    message += "• /editproduct - Edit product\n";
-    message += "• /removeproduct - Remove product\n\n";
-    message += "📥 *Inventory Management:*\n";
-    message += "• /addstock <id> <cred> - Add credentials\n";
-    message += "• /addstock-bulk <id> - Add multiple credentials\n";
-    message += "• /stockreport - View all stock\n";
-    message += "• /salesreport [days] - Sales report\n\n";
-    message += "⭐ *Review Management:*\n";
-    message += "• /reviews <product> - View product reviews\n";
-    message += "• /reviewstats - Overall review stats\n";
-    message += "• /deletereview <id> - Delete/moderate review\n\n";
-    message += "🤖 *AI Tools:*\n";
-    message += "• /generate-desc <productId> - Generate product description";
+    let message = "👨‍💼 *ADMIN COMMAND REFERENCE*\n\n";
+    message += "Gunakan /help untuk melihat pesan ini\n";
+    message += "━━━━━━━━━━━━━━━━━━\n\n";
+
+    message += "📦 *Order & Communication* (2 commands)\n";
+    message += "• /approve <order-id> - Setujui pembayaran & kirim produk\n";
+    message +=
+      "• /broadcast <message> - Kirim pesan ke semua customer aktif\n\n";
+
+    message += "📊 *Analytics & Stats* (2 commands)\n";
+    message += "• /stats [days] - Dashboard analytics (default: 30 hari)\n";
+    message += "• /status - Status sistem (RAM, uptime, Redis, logs)\n\n";
+
+    message += "🏷️ *Product Management* (5 commands)\n";
+    message += "• /stock [id] [qty] - Lihat/update stock produk\n";
+    message += "• /addproduct <id|name|price|desc|cat> - Tambah produk baru\n";
+    message += "• /editproduct <id> <field> <value> - Edit produk\n";
+    message += "• /removeproduct <product-id> - Hapus produk\n";
+    message += "• /generate-desc <product-id> - AI generate deskripsi\n\n";
+
+    message += "📦 *Inventory Management* (5 commands)\n";
+    message += "• /addstock <id> <credentials> - Tambah 1 credential\n";
+    message += "• /addstock-bulk <product-id> - Mode bulk add\n";
+    message += "• /syncstock - Sync stock dari folder products_data/\n";
+    message += "• /stockreport - Laporan stock semua produk\n";
+    message += "• /salesreport [days] - Laporan penjualan (default: 30)\n\n";
+
+    message += "🎟️ *Promo Management* (4 commands)\n";
+    message += "• /createpromo <CODE> <diskon%> <hari> - Buat promo\n";
+    message += "• /listpromos - Lihat semua promo aktif\n";
+    message += "• /deletepromo <CODE> - Hapus promo\n";
+    message += "• /promostats [CODE] - Statistik penggunaan promo\n\n";
+
+    message += "⭐ *Review Management* (3 commands)\n";
+    message += "• /reviews <product-id> - Lihat review produk\n";
+    message += "• /reviewstats - Statistik review keseluruhan\n";
+    message += "• /deletereview <prod-id> <idx> - Hapus review\n\n";
+
+    message += "⚙️ *Settings* (1 command)\n";
+    message += "• /settings [key] [value] - Kelola pengaturan bot\n\n";
+
+    message += "━━━━━━━━━━━━━━━━━━\n";
+    message += "📝 *Total: 22 Admin Commands*\n\n";
+    message += "💡 Tips:\n";
+    message += "• Semua command dimulai dengan /\n";
+    message += "• Parameter <wajib> | [opsional]\n";
+    message += "• Gunakan /help kapan saja\n";
+    message += "• Command case-insensitive";
 
     return message;
   }

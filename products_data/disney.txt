@@ -1,4 +1,3 @@
-disney1@example.com:dispass1
 disney2@example.com:dispass2
 disney3@example.com:dispass3
 disney4@example.com:dispass4

@@ -1,0 +1,8 @@
+{
+  "productId": "vcc-basic",
+  "orderId": "ORD-1762153438141-c.us",
+  "customerId": "6285345902520@c.us",
+  "credentials": "4111111111111111|123|12/25",
+  "soldAt": "2025-11-03T07:04:30.544Z",
+  "transactionId": "TXN-1762153470544-b2ef98e7"
+}

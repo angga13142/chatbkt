@@ -1,4 +1,3 @@
-spotify1@example.com:pass111
 spotify2@example.com:spotpass2
 spotify3@example.com:spotpass3
 spotify4@example.com:spotpass4
