@@ -70,16 +70,27 @@ class AdminOrderHandler extends BaseHandler {
     const cart = await this.sessionManager.getCart(customerId);
     const ProductDelivery = require("../../services/productDelivery");
     const productDelivery = new ProductDelivery();
-    const deliveryResult = productDelivery.deliverProducts(
-      customerId,
-      orderId,
-      cart
-    );
+
+    let deliveryResult;
+    try {
+      deliveryResult = await productDelivery.deliverProducts(
+        customerId,
+        orderId,
+        cart
+      );
+    } catch (error) {
+      this.logError(customerId, error, {
+        orderId,
+        action: "product_delivery",
+      });
+      return `❌ *Delivery Error*\n\nOrder: ${orderId}\nError: ${error.message}\n\nSilakan cek file di products_data/ dan stock.`;
+    }
 
     if (!deliveryResult.success) {
       this.logError(customerId, new Error("Delivery failed"), {
         orderId,
         reason: "no_products_available",
+        failedProducts: deliveryResult.failed,
       });
       return UIMessages.deliveryFailed(orderId);
     }
@@ -102,14 +113,14 @@ class AdminOrderHandler extends BaseHandler {
       totalUSD,
       totalIDR,
       products: cart.map((p) => p.name), // Keep for backward compatibility
+      delivered: deliveryResult.delivered.length,
+      failed: deliveryResult.failed.length,
     });
 
-    // Decrement stock
-    const { decrementStock } = require("../../config");
-    cart.forEach((item) => {
-      decrementStock(item.id);
-      console.log(`📦 Stock decremented for ${item.id}`);
-    });
+    // Note: Stock already decremented in productDelivery.deliverProducts()
+    console.log(
+      `✅ Order ${orderId} approved and delivered (${deliveryResult.delivered.length} products)`
+    );
 
     // Clear cart and reset step
     await this.sessionManager.clearCart(customerId);
