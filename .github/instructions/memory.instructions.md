@@ -1,39 +1,38 @@
 ---
-applyTo: '**'
----
-Provide project context and coding guidelines that AI should follow when generating code, answering questions, or reviewing changes.
-
----
-applyTo: '**'
+applyTo: "**"
 ---
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
 
 ---
-applyTo: '**'
+
+## applyTo: '\*\*'
+
 ---
+
+## applyTo: '\*\*'
 
 ---
 applyTo: '**'
@@ -568,6 +567,85 @@ mv docs/COMMAND_CONSISTENCY_ANALYSIS.md docs/archive/analysis/
 🚫 **100% redundancy removed**
 📂 **6 new archive folders** (organized by type)
 💾 **Zero information loss** (all archived, not deleted)
+
+</memory>
+
+<memory path="/memories/security-implementation-plan.md">
+# Security Implementation Plan - November 6, 2025
+
+## Mission: Autonomous Security Hardening
+
+Implementing 14 security recommendations from COMPREHENSIVE_DOCUMENTATION.md audit.
+
+## Phase 1: CRITICAL (Implementing Now)
+
+### ✅ Task 1: Admin Number Validation on Startup
+**File:** index.js
+**Lines:** Add after line 6
+**Status:** Ready to implement
+**Time:** 5 min
+
+### ✅ Task 2: Webhook Rate Limiting
+**File:** services/webhookServer.js
+**Dependencies:** express-rate-limit (check if installed)
+**Status:** Ready to implement
+**Time:** 10 min
+
+### ✅ Task 3: Run npm audit fix
+**Command:** npm audit fix
+**Status:** Ready to run
+**Time:** 2 min
+
+## Phase 2: HIGH Priority (After Phase 1)
+
+### Task 4: Xendit API Key Validation
+**File:** index.js
+**Status:** Ready to implement
+**Time:** 5 min
+
+### Task 5: Constant-Time Token Comparison
+**File:** services/webhookServer.js
+**Status:** Ready to implement
+**Time:** 10 min
+
+### Task 6: Log File Permissions
+**File:** install-vps.sh
+**Status:** Ready to implement
+**Time:** 5 min
+
+## Phase 3: Documentation & Testing
+
+### Task 7: Update Tests
+**Files:** Add tests for new validations
+**Status:** After implementation
+**Time:** 15 min
+
+### Task 8: Update Documentation
+**Files:** Update README with security notes
+**Status:** After implementation
+**Time:** 5 min
+
+## Implementation Strategy
+
+1. Read current code structure
+2. Implement changes one by one
+3. Test each change
+4. Commit incrementally
+5. Run full test suite
+6. Push to repositories
+
+## Progress Tracking
+
+- [ ] Phase 1 Task 1: Admin validation
+- [ ] Phase 1 Task 2: Webhook rate limiting
+- [ ] Phase 1 Task 3: npm audit fix
+- [ ] Phase 2 Task 4: API key validation
+- [ ] Phase 2 Task 5: Constant-time comparison
+- [ ] Phase 2 Task 6: Log permissions
+- [ ] Phase 3 Task 7: Tests
+- [ ] Phase 3 Task 8: Documentation
+
+## Current Status: STARTING
 
 </memory>
 

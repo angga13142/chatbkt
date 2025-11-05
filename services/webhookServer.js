@@ -5,6 +5,8 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const rateLimit = require("express-rate-limit");
+const crypto = require("crypto");
 
 class WebhookServer {
   constructor(sessionManager, chatbotLogic, whatsappClient) {
@@ -27,11 +29,59 @@ class WebhookServer {
   }
 
   /**
+   * Constant-time string comparison to prevent timing attacks
+   * @param {string} a - First string
+   * @param {string} b - Second string
+   * @returns {boolean} True if strings are equal
+   */
+  secureCompare(a, b) {
+    if (!a || !b) return false;
+    if (a.length !== b.length) return false;
+
+    try {
+      return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+    } catch {
+      // Fallback if crypto.timingSafeEqual fails
+      return false;
+    }
+  }
+
+  /**
    * Setup Express middleware
    */
   setupMiddleware() {
-    // Parse JSON bodies
-    this.app.use(bodyParser.json());
+    // Security headers
+    this.app.use((req, res, next) => {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("X-Frame-Options", "DENY");
+      res.setHeader("X-XSS-Protection", "1; mode=block");
+      if (req.secure || req.headers["x-forwarded-proto"] === "https") {
+        res.setHeader(
+          "Strict-Transport-Security",
+          "max-age=31536000; includeSubDomains"
+        );
+      }
+      next();
+    });
+
+    // Parse JSON bodies with size limit
+    this.app.use(bodyParser.json({ limit: "10mb" }));
+    this.app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+
+    // Webhook rate limiting
+    const webhookLimiter = rateLimit({
+      windowMs: 1 * 60 * 1000, // 1 minute
+      max: 100, // 100 requests per minute per IP
+      message: {
+        error: "Too many webhook requests",
+        retry_after: "60 seconds",
+      },
+      standardHeaders: true,
+      legacyHeaders: false,
+    });
+
+    // Apply rate limiting to webhook endpoint
+    this.app.use("/webhook/", webhookLimiter);
 
     // Request logging
     this.app.use((req, res, next) => {
@@ -119,6 +169,11 @@ class WebhookServer {
    * @param {Object} req - Express request
    * @returns {boolean}
    */
+  /**
+   * Verify webhook signature using constant-time comparison
+   * @param {Object} req - Express request object
+   * @returns {boolean} True if signature is valid
+   */
   verifyWebhookSignature(req) {
     if (!this.webhookToken) {
       console.warn(
@@ -133,8 +188,8 @@ class WebhookServer {
       return false;
     }
 
-    // Xendit uses simple token comparison
-    return callbackToken === this.webhookToken;
+    // Use constant-time comparison to prevent timing attacks
+    return this.secureCompare(callbackToken, this.webhookToken);
   }
 
   /**

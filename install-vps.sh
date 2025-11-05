@@ -60,6 +60,23 @@ fi
 
 echo "✅ Installation complete!"
 echo ""
+
+# Security: Set restrictive permissions for sensitive directories
+if [ -d "logs" ]; then
+  echo "🔒 Setting restrictive permissions for log files..."
+  chmod 700 logs/
+  find logs/ -type f -name "*.log" -exec chmod 600 {} \;
+  echo "✅ Log file permissions secured (700 for directory, 600 for files)"
+fi
+
+if [ -d "data" ]; then
+  echo "🔒 Setting restrictive permissions for data directory..."
+  chmod 700 data/
+  find data/ -type f -exec chmod 600 {} \;
+  echo "✅ Data file permissions secured"
+fi
+
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📋 Next Steps:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

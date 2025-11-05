@@ -5,6 +5,32 @@
 
 require("dotenv").config();
 
+// Security: Validate admin numbers on startup
+const adminNumbers = [
+  process.env.ADMIN_NUMBER_1,
+  process.env.ADMIN_NUMBER_2,
+  process.env.ADMIN_NUMBER_3,
+].filter(Boolean);
+
+if (adminNumbers.length === 0) {
+  console.error("❌ CRITICAL: No admin numbers configured in .env");
+  console.error("💡 Set at least ADMIN_NUMBER_1 in .env file");
+  console.error("📝 Example: ADMIN_NUMBER_1=6281234567890");
+  process.exit(1);
+}
+
+console.log(`✅ Configured ${adminNumbers.length} admin number(s)`);
+
+// Security: Validate Xendit API key format if configured
+if (process.env.XENDIT_SECRET_KEY) {
+  if (!process.env.XENDIT_SECRET_KEY.startsWith("xnd_")) {
+    console.error("❌ CRITICAL: Invalid XENDIT_SECRET_KEY format");
+    console.error("💡 API key should start with 'xnd_'");
+    process.exit(1);
+  }
+  console.log("✅ Xendit API key format validated");
+}
+
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const SessionManager = require("./sessionManager");
