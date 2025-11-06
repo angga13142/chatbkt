@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for chatbot/src/handlers/AdminPromoHandler.js</title>
+    <title>Code coverage report for chatbot/src/utils/DynamicProductLoader.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">chatbot/src/handlers</a> AdminPromoHandler.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">chatbot/src/utils</a> DynamicProductLoader.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/67</span>
+                <span class='fraction'>52/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">71.42% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>15/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">86.2% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>50/58</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -231,12 +231,65 @@
 <a name='L166'></a><a href='#L166'>166</a>
 <a name='L167'></a><a href='#L167'>167</a>
 <a name='L168'></a><a href='#L168'>168</a>
-<a name='L169'></a><a href='#L169'>169</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -245,16 +298,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">117x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">78x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -265,127 +331,115 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">57x</span>
+<span class="cline-any cline-yes">57x</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">356x</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">36x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -393,180 +447,270 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * Admin Promo Handler
- * Handles promo code management commands: createpromo, listpromos, deletepromo, promostats
+ * Dynamic Product Loader
+ * Auto-discovers products from products_data/ folder
  */
 &nbsp;
-const BaseHandler = <span class="cstat-no" title="statement not covered" >require("./BaseHandler");</span>
+const fs = require("fs");
+const path = require("path");
 &nbsp;
-class AdminPromoHandler extends BaseHandler {
+const PRODUCTS_DIR = path.join(__dirname, "../../products_data");
+const PRODUCT_METADATA_FILE = path.join(
+  __dirname,
+  "../../products_data/products.json"
+);
+&nbsp;
+class DynamicProductLoader {
   /**
-   * @param {SessionManager} sessionManager
-   * @param {PromoService} promoService
-   * @param {Logger} logger
+   * Scan products_data/ directory for product files
+   * @returns {Array} List of discovered product files
    */
-<span class="fstat-no" title="function not covered" >  co</span>nstructor(sessionManager, promoService, logger = <span class="branch-0 cbranch-no" title="branch not covered" >null)</span> {
-<span class="cstat-no" title="statement not covered" >    super(sessionManager, logger);</span>
-<span class="cstat-no" title="statement not covered" >    this.promoService = promoService;</span>
-  }
-&nbsp;
-  /**
-   * /createpromo CODE DISCOUNT DAYS [MAX_USES] - Create promo code
-   */
-<span class="fstat-no" title="function not covered" >  ha</span>ndleCreatePromo(adminId, message) {
-    const parts = <span class="cstat-no" title="statement not covered" >message.split(" ");</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (parts.length &lt; 4) {</span>
-<span class="cstat-no" title="statement not covered" >      return (</span>
-        "❌ *Format salah*\n\n" +
-        "Gunakan: /createpromo CODE DISCOUNT DAYS [MAX_USES]\n\n" +
-        "Contoh:\n" +
-        "• /createpromo NEWUSER10 10 30 - 10% diskon, 30 hari, unlimited\n" +
-        "• /createpromo FLASH50 50 7 100 - 50% diskon, 7 hari, max 100 uses"
-      );
-    }
-&nbsp;
-    const code = <span class="cstat-no" title="statement not covered" >parts[1];</span>
-    const discountPercent = <span class="cstat-no" title="statement not covered" >parseInt(parts[2]);</span>
-    const expiryDays = <span class="cstat-no" title="statement not covered" >parseInt(parts[3]);</span>
-    const maxUses = <span class="cstat-no" title="statement not covered" >parts[4] ? parseInt(parts[4]) : 0;</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (isNaN(discountPercent) || isNaN(expiryDays)) {</span>
-<span class="cstat-no" title="statement not covered" >      return "❌ Discount dan Days harus berupa angka";</span>
-    }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (parts[4] &amp;&amp; isNaN(maxUses)) {</span>
-<span class="cstat-no" title="statement not covered" >      return "❌ Max uses harus berupa angka";</span>
-    }
-&nbsp;
-    const result = <span class="cstat-no" title="statement not covered" >this.promoService.createPromo(</span>
-      code,
-      discountPercent,
-      expiryDays,
-      maxUses
-    );
-<span class="cstat-no" title="statement not covered" >    return result.message;</span>
-  }
-&nbsp;
-  /**
-   * /listpromos - List all promo codes
-   */
-<span class="fstat-no" title="function not covered" >  ha</span>ndleListPromos(_adminId) {
-    const promos = <span class="cstat-no" title="statement not covered" >this.promoService.getAllPromos(true);</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (promos.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >      return (</span>
-        "📋 *DAFTAR PROMO*\n\n" +
-        "Belum ada promo code yang dibuat.\n\n" +
-        "Gunakan /createpromo untuk membuat promo baru."
-      );
-    }
-&nbsp;
-    let message = <span class="cstat-no" title="statement not covered" >"📋 *DAFTAR PROMO CODE*\n\n";</span>
-&nbsp;
-    const now = <span class="cstat-no" title="statement not covered" >Date.now();</span>
-    const activePromos = <span class="cstat-no" title="statement not covered" >promos.filter(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.isActive &amp;&amp; p.expiryDate &gt; now)</span>;</span>
-    const expiredPromos = <span class="cstat-no" title="statement not covered" >promos.filter(</span>
-<span class="fstat-no" title="function not covered" >      (p</span>) =&gt; <span class="cstat-no" title="statement not covered" >!p.isActive || p.expiryDate &lt;= now</span>
-    );
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (activePromos.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      message += "✅ *AKTIF:*\n\n";</span>
-<span class="cstat-no" title="statement not covered" >      activePromos.forEach(<span class="fstat-no" title="function not covered" >(p</span>romo, index) =&gt; {</span>
-        const expiresIn = <span class="cstat-no" title="statement not covered" >Math.ceil(</span>
-          (promo.expiryDate - now) / (24 * 60 * 60 * 1000)
+  static scanProductFiles() {
+    try {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!fs.existsSync(PRODUCTS_DIR)) {
+<span class="cstat-no" title="statement not covered" >        console.warn(</span>
+          `⚠️ Products directory not found: ${PRODUCTS_DIR}`
         );
-        const remaining =
-<span class="cstat-no" title="statement not covered" >          promo.maxUses &gt; 0</span>
-            ? `${promo.maxUses - promo.currentUses}/${promo.maxUses}`
-            : "Unlimited";
+<span class="cstat-no" title="statement not covered" >        return [];</span>
+      }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        message += `${index + 1}. 🎟️ *${promo.code}*\n`;</span>
-<span class="cstat-no" title="statement not covered" >        message += `   💰 Diskon: ${promo.discountPercent}%\n`;</span>
-<span class="cstat-no" title="statement not covered" >        message += `   📅 Sisa: ${expiresIn} hari\n`;</span>
-<span class="cstat-no" title="statement not covered" >        message += `   🔢 Uses: ${promo.currentUses} (Sisa: ${remaining})\n\n`;</span>
-      });
+      const files = fs.readdirSync(PRODUCTS_DIR);
+      const productFiles = files.filter(
+        (file) =&gt;
+          file.endsWith(".txt") &amp;&amp;
+          !file.startsWith("_") &amp;&amp;
+          file !== "README.txt"
+      );
+&nbsp;
+      return productFiles.map((file) =&gt; ({
+        filename: file,
+        productId: file.replace(".txt", ""),
+        path: path.join(PRODUCTS_DIR, file),
+      }));
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >      console.error("❌ Error scanning product files:", error);</span>
+<span class="cstat-no" title="statement not covered" >      return [];</span>
     }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (expiredPromos.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      message += "❌ *EXPIRED/INACTIVE:*\n\n";</span>
-<span class="cstat-no" title="statement not covered" >      expiredPromos.forEach(<span class="fstat-no" title="function not covered" >(p</span>romo, index) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        message += `${index + 1}. ${promo.code} - ${promo.discountPercent}% (${</span>
-          promo.currentUses
-        } uses)\n`;
-      });
-    }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    message += "\n━━━━━━━━━━━━━━━━━━\n";</span>
-<span class="cstat-no" title="statement not covered" >    message += `📊 Total: ${promos.length} promo\n\n`;</span>
-<span class="cstat-no" title="statement not covered" >    message += "💡 *Perintah:*\n";</span>
-<span class="cstat-no" title="statement not covered" >    message += "• /promostats CODE - Lihat detail\n";</span>
-<span class="cstat-no" title="statement not covered" >    message += "• /deletepromo CODE - Hapus promo";</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    return message;</span>
   }
 &nbsp;
   /**
-   * /deletepromo CODE - Delete promo code
+   * Load product metadata from products.json
+   * @returns {Object} Product metadata by productId
    */
-<span class="fstat-no" title="function not covered" >  ha</span>ndleDeletePromo(adminId, message) {
-    const parts = <span class="cstat-no" title="statement not covered" >message.split(" ");</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (parts.length &lt; 2) {</span>
-<span class="cstat-no" title="statement not covered" >      return "❌ Format: /deletepromo CODE\n\nContoh: /deletepromo NEWUSER10";</span>
+  static loadProductMetadata() {
+    try {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (fs.existsSync(PRODUCT_METADATA_FILE)) {
+        const data = fs.readFileSync(PRODUCT_METADATA_FILE, "utf8");
+        return JSON.parse(data);
+      }
+    } catch {
+<span class="cstat-no" title="statement not covered" >      console.warn("⚠️ No product metadata file, using auto-detection");</span>
     }
-&nbsp;
-    const code = <span class="cstat-no" title="statement not covered" >parts[1];</span>
-    const result = <span class="cstat-no" title="statement not covered" >this.promoService.deletePromo(code);</span>
-<span class="cstat-no" title="statement not covered" >    return result.message;</span>
+<span class="cstat-no" title="statement not covered" >    return {};</span>
   }
 &nbsp;
   /**
-   * /promostats CODE - Get promo statistics
+   * Auto-generate product metadata from filename
+   * @param {string} productId - Product ID from filename
+   * @returns {Object} Generated metadata
    */
-<span class="fstat-no" title="function not covered" >  ha</span>ndlePromoStats(adminId, message) {
-    const parts = <span class="cstat-no" title="statement not covered" >message.split(" ");</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (parts.length &lt; 2) {</span>
-<span class="cstat-no" title="statement not covered" >      return "❌ Format: /promostats CODE\n\nContoh: /promostats NEWUSER10";</span>
+  static generateMetadata(productId) {
+    // Detect category from ID
+    let category = "premium";
+    if (productId.startsWith("vcc")) {
+      category = "vcc";
+    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (productId.includes("game")) {
+<span class="cstat-no" title="statement not covered" >      category = "game";</span>
+    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (productId.includes("vpn")) {
+<span class="cstat-no" title="statement not covered" >      category = "vpn";</span>
     }
 &nbsp;
-    const code = <span class="cstat-no" title="statement not covered" >parts[1];</span>
-    const stats = <span class="cstat-no" title="statement not covered" >this.promoService.getPromoStats(code);</span>
+    // Generate name (capitalize and format)
+    const name = productId
+      .split("-")
+      .map((word) =&gt; word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (!stats) {</span>
-<span class="cstat-no" title="statement not covered" >      return `❌ Kode promo ${code} tidak ditemukan`;</span>
+    // Default descriptions by category
+    const descriptions = {
+      premium: "Premium account access",
+      vcc: "Virtual credit card",
+      game: "Game credits/items",
+      vpn: "VPN subscription",
+    };
+&nbsp;
+    return {
+      id: productId,
+      name: `${name} Premium`,
+      price: 15800, // Default price (can be overridden in metadata)
+      description: descriptions[category] || <span class="branch-1 cbranch-no" title="branch not covered" >"Digital product",</span>
+      stock: 0, // Will be loaded from file
+      category: category,
+      autoDiscovered: true, // Flag for auto-discovered products
+    };
+  }
+&nbsp;
+  /**
+   * Count available stock from product file
+   * @param {string} filePath - Path to product file
+   * @returns {number} Number of lines (stock count)
+   */
+  static countStock(filePath) {
+    try {
+      const content = fs.readFileSync(filePath, "utf8");
+      const lines = content
+        .split("\n")
+        .filter((line) =&gt; line.trim().length &gt; 0);
+      return lines.length;
+    } catch {
+      return 0;
     }
+  }
 &nbsp;
-    let response = <span class="cstat-no" title="statement not covered" >`📊 *PROMO STATISTICS*\n\n`;</span>
-<span class="cstat-no" title="statement not covered" >    response += `🎟️ Code: *${stats.code}*\n`;</span>
-<span class="cstat-no" title="statement not covered" >    response += `💰 Discount: ${stats.discountPercent}%\n`;</span>
-<span class="cstat-no" title="statement not covered" >    response += `📈 Total Uses: ${stats.totalUses}\n`;</span>
-<span class="cstat-no" title="statement not covered" >    response += `🔢 Remaining: ${</span>
-      stats.remainingUses === -1 ? "Unlimited" : stats.remainingUses
-    }\n`;
-<span class="cstat-no" title="statement not covered" >    response += `📅 Expires In: ${stats.expiresIn} hari\n`;</span>
-<span class="cstat-no" title="statement not covered" >    response += `📌 Status: ${</span>
-      stats.isActive
-        ? stats.isExpired
-          ? "❌ Expired"
-          : "✅ Active"
-        : "❌ Inactive"
-    }\n`;
+  /**
+   * Load all products dynamically
+   * @returns {Object} Products object with premiumAccounts and virtualCards
+   */
+  static loadProducts() {
+    const productFiles = this.scanProductFiles();
+    const metadata = this.loadProductMetadata();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    this.log(adminId, "promo_stats_viewed", { code });</span>
-<span class="cstat-no" title="statement not covered" >    return response;</span>
+    const premiumAccounts = [];
+    const virtualCards = [];
+&nbsp;
+    productFiles.forEach(({ productId, path: filePath }) =&gt; {
+      // Use metadata if available, otherwise auto-generate
+      const productData = metadata[productId]
+        ? {
+            ...metadata[productId],
+            id: productId, // Ensure ID matches file
+          }
+        : <span class="branch-1 cbranch-no" title="branch not covered" >this.generateMetadata(productId);</span>
+&nbsp;
+      // Count actual stock from file
+      productData.stock = this.countStock(filePath);
+&nbsp;
+      // Categorize
+      if (productData.category === "vcc") {
+        virtualCards.push(productData);
+      } else {
+        premiumAccounts.push(productData);
+      }
+    });
+&nbsp;
+    return {
+      premiumAccounts: premiumAccounts.sort((a, b) =&gt;
+        a.name.localeCompare(b.name)
+      ),
+      virtualCards: virtualCards.sort((a, b) =&gt;
+        a.name.localeCompare(b.name)
+      ),
+    };
+  }
+&nbsp;
+  /**
+   * Get product by ID (searches in loaded products)
+   * @param {string} productId - Product ID
+   * @returns {Object|null} Product object or null
+   */
+  static getProductById(productId) {
+    const products = this.loadProducts();
+    const allProducts = [
+      ...products.premiumAccounts,
+      ...products.virtualCards,
+    ];
+    return allProducts.find((p) =&gt; p.id === productId) || null;
+  }
+&nbsp;
+  /**
+   * Check if product file exists
+   * @param {string} productId - Product ID
+   * @returns {boolean}
+   */
+  static productFileExists(productId) {
+    const filePath = path.join(PRODUCTS_DIR, `${productId}.txt`);
+    return fs.existsSync(filePath);
+  }
+&nbsp;
+  /**
+   * Generate sample products.json metadata file
+   * @returns {string} JSON string
+   */
+  static generateSampleMetadata() {
+    const sample = {
+      netflix: {
+        name: "Netflix Premium (1 Month)",
+        price: 15800,
+        description: "Full HD streaming, 4 screens, offline download",
+        category: "premium",
+      },
+      spotify: {
+        name: "Spotify Premium (1 Month)",
+        price: 15800,
+        description: "Ad-free music, unlimited skips, offline mode",
+        category: "premium",
+      },
+      "vcc-basic": {
+        name: "Virtual Card Basic ($10)",
+        price: 15800,
+        description: "Pre-loaded $10 balance for online payments",
+        category: "vcc",
+      },
+    };
+    return JSON.stringify(sample, null, 2);
   }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = AdminPromoHandler;</span>
+module.exports = DynamicProductLoader;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

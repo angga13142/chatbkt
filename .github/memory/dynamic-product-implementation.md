@@ -13,6 +13,7 @@ Auto-discover and update product catalog when new product files added to `produc
 ### 1. DynamicProductLoader (`src/utils/DynamicProductLoader.js`)
 
 **Core Features:**
+
 - Scans `products_data/` for `.txt` files
 - Loads metadata from `products.json` (optional)
 - Auto-generates metadata from filenames
@@ -20,14 +21,15 @@ Auto-discover and update product catalog when new product files added to `produc
 - Categorizes products (premium, vcc, game, vpn)
 
 **Methods:**
+
 ```javascript
-scanProductFiles()           // Find all .txt files
-loadProductMetadata()        // Load products.json
-generateMetadata(productId)  // Auto-generate from filename
-countStock(filePath)         // Count lines = stock
-loadProducts()               // Main loader
-getProductById(id)           // Find by ID
-productFileExists(id)        // Check file exists
+scanProductFiles(); // Find all .txt files
+loadProductMetadata(); // Load products.json
+generateMetadata(productId); // Auto-generate from filename
+countStock(filePath); // Count lines = stock
+loadProducts(); // Main loader
+getProductById(id); // Find by ID
+productFileExists(id); // Check file exists
 ```
 
 ### 2. Updated Products Config (`src/config/products.config.js`)
@@ -44,8 +46,8 @@ module.exports = {
   products,
   getProductById,
   getAllProducts,
-  refreshProducts,  // Reload without restart
-  DynamicProductLoader
+  refreshProducts, // Reload without restart
+  DynamicProductLoader,
 };
 ```
 
@@ -65,6 +67,7 @@ module.exports = {
 ```
 
 **If missing:** Auto-generates from filename:
+
 - `netflix.txt` → "Netflix Premium"
 - `vcc-basic.txt` → "Vcc Basic Premium"
 - Auto-detects category from ID
@@ -72,17 +75,20 @@ module.exports = {
 ### 4. Admin Command (`/refreshproducts`)
 
 **Added to AdminHandler:**
+
 ```
 /refreshproducts - Reload produk dari folder
 ```
 
 **Features:**
+
 - Scans for new/removed products
 - Shows changes (added/removed)
 - No restart needed
 - Logs changes
 
 **Example Output:**
+
 ```
 🔄 Products Refreshed
 
@@ -102,11 +108,13 @@ module.exports = {
 ### Adding New Product (Admin Workflow)
 
 1. **Create product file:**
+
 ```bash
 echo "email@example.com:password123" > products_data/new-product.txt
 ```
 
 2. **Option A: With metadata (recommended):**
+
 ```bash
 # Edit products_data/products.json
 {
@@ -120,6 +128,7 @@ echo "email@example.com:password123" > products_data/new-product.txt
 ```
 
 3. **Option B: Auto-generate (quick):**
+
 ```
 Skip products.json - auto-generates metadata:
 - Name: "New Product Premium"
@@ -128,6 +137,7 @@ Skip products.json - auto-generates metadata:
 ```
 
 4. **Refresh products (no restart):**
+
 ```
 Send WhatsApp message: /refreshproducts
 ```
@@ -137,17 +147,20 @@ Send WhatsApp message: /refreshproducts
 ### Auto-Detection Rules
 
 **Category Detection:**
+
 - Starts with `vcc` → category: "vcc"
 - Contains `game` → category: "game"
 - Contains `vpn` → category: "vpn"
 - Default → category: "premium"
 
 **Name Generation:**
+
 - `netflix` → "Netflix Premium"
 - `vcc-basic` → "Vcc Basic Premium"
 - `youtube-premium` → "Youtube Premium Premium"
 
 **Stock Count:**
+
 - Counts non-empty lines in `.txt` file
 - `5 lines` = `stock: 5`
 - Auto-updates on refresh
@@ -170,28 +183,34 @@ products_data/
 ## Benefits
 
 ✅ **Zero Code Changes**
+
 - Add `.txt` file → automatic discovery
 - No need to edit `products.config.js`
 
 ✅ **Hot Reload**
+
 - `/refreshproducts` command
 - No bot restart needed
 
 ✅ **Flexible Metadata**
+
 - Use `products.json` for custom details
 - Or rely on auto-generation
 
 ✅ **Stock Auto-Sync**
+
 - Line count = stock
 - Always accurate
 
 ✅ **Category Auto-Detect**
+
 - Intelligent categorization
 - Supports custom categories
 
 ## Testing
 
 ✅ **27 comprehensive tests passing:**
+
 - File scanning (4 tests)
 - Metadata loading (2 tests)
 - Auto-generation (4 tests)
@@ -225,6 +244,7 @@ products_data/
 **No migration needed!** Existing products continue to work.
 
 **Optional:** Create `products.json` for better metadata:
+
 ```bash
 cd products_data
 # Generate sample
@@ -234,6 +254,7 @@ node -e "const DPL = require('../src/utils/DynamicProductLoader'); console.log(D
 ### For New Products
 
 **Quick Method:**
+
 ```bash
 # 1. Add credentials file
 echo "account:password" > products_data/new-product.txt
@@ -248,6 +269,7 @@ echo "account:password" > products_data/new-product.txt
 ```
 
 **Custom Method:**
+
 ```bash
 # 1. Add credentials file
 echo "account:password" > products_data/new-product.txt
@@ -272,20 +294,20 @@ echo '{
 
 ```javascript
 // src/config/products.config.js
-const { 
-  products,              // Dynamic products object
-  getProductById,        // Find product by ID
-  getAllProducts,        // Get all products array
-  refreshProducts,       // Reload products
-  DynamicProductLoader   // Access loader class
-} = require('./src/config/products.config');
+const {
+  products, // Dynamic products object
+  getProductById, // Find product by ID
+  getAllProducts, // Get all products array
+  refreshProducts, // Reload products
+  DynamicProductLoader, // Access loader class
+} = require("./src/config/products.config");
 ```
 
 ### Backward Compatible
 
 ```javascript
 // Old code still works
-const { products } = require('./config');
+const { products } = require("./config");
 const allProducts = products.premiumAccounts.concat(products.virtualCards);
 ```
 
@@ -306,17 +328,18 @@ const allProducts = products.premiumAccounts.concat(products.virtualCards);
 
 ## Files Modified/Added
 
-| File | Type | Lines | Status |
-|------|------|-------|--------|
-| `src/utils/DynamicProductLoader.js` | NEW | 219 | ✅ |
-| `src/config/products.config.js` | Modified | -53, +37 | ✅ |
-| `src/handlers/AdminHandler.js` | Modified | +68 | ✅ |
-| `products_data/products.json` | NEW | 30 | ✅ |
-| `tests/unit/utils/DynamicProductLoader.test.js` | NEW | 242 | ✅ |
+| File                                            | Type     | Lines    | Status |
+| ----------------------------------------------- | -------- | -------- | ------ |
+| `src/utils/DynamicProductLoader.js`             | NEW      | 219      | ✅     |
+| `src/config/products.config.js`                 | Modified | -53, +37 | ✅     |
+| `src/handlers/AdminHandler.js`                  | Modified | +68      | ✅     |
+| `products_data/products.json`                   | NEW      | 30       | ✅     |
+| `tests/unit/utils/DynamicProductLoader.test.js` | NEW      | 242      | ✅     |
 
 ## Example Scenarios
 
 ### Scenario 1: Add Netflix
+
 ```bash
 # 1. Create file with 10 accounts
 for i in {1..10}; do
@@ -333,6 +356,7 @@ done
 ```
 
 ### Scenario 2: Seasonal Product
+
 ```bash
 # 1. Add Ramadan package
 echo "promo:ramadan2025" > products_data/ramadan-package.txt
@@ -363,4 +387,3 @@ rm products_data/ramadan-package.txt
 - Stock count syncs with file lines
 - Metadata is optional but recommended
 - Category affects product grouping in UI
-

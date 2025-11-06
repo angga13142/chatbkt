@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.91% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/121</span>
+                <span class='fraction'>0/121</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.41% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/68</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/24</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.48% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/116</span>
+                <span class='fraction'>0/116</span>
             </div>
         
             
@@ -493,11 +493,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -505,10 +505,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">95x</span>
-<span class="cline-any cline-yes">95x</span>
-<span class="cline-any cline-yes">95x</span>
-<span class="cline-any cline-yes">95x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -518,7 +518,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -912,28 +912,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * AIHandler - AI-powered fallback handler for customer queries
  * Handles typo correction, product Q&amp;A, and recommendations using Gemini 2.5 Flash Lite
  */
 &nbsp;
-const { z } = require("zod");
-const AIService = require("../services/ai/AIService");
-const AI_CONFIG = require("../config/ai.config");
-const ProductService = require("../services/product/ProductService");
-const FuzzySearch = require("../utils/FuzzySearch");
+const { z } = <span class="cstat-no" title="statement not covered" >require("zod");</span>
+const AIService = <span class="cstat-no" title="statement not covered" >require("../services/ai/AIService");</span>
+const AI_CONFIG = <span class="cstat-no" title="statement not covered" >require("../config/ai.config");</span>
+const ProductService = <span class="cstat-no" title="statement not covered" >require("../services/product/ProductService");</span>
+const FuzzySearch = <span class="cstat-no" title="statement not covered" >require("../utils/FuzzySearch");</span>
 &nbsp;
 class AIHandler {
-  constructor(
-    productService = new ProductService(),
-    redisClient = null,
+<span class="fstat-no" title="function not covered" >  co</span>nstructor(
+    productService = <span class="branch-0 cbranch-no" title="branch not covered" >new ProductService(),</span>
+    redisClient = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span>
     logger = <span class="branch-0 cbranch-no" title="branch not covered" >console</span>
   ) {
-    this.productService = productService;
-    this.aiService = new AIService(redisClient, logger);
-    this.fuzzySearch = new FuzzySearch();
-    this.logger = logger;
+<span class="cstat-no" title="statement not covered" >    this.productService = productService;</span>
+<span class="cstat-no" title="statement not covered" >    this.aiService = new AIService(redisClient, logger);</span>
+<span class="cstat-no" title="statement not covered" >    this.fuzzySearch = new FuzzySearch();</span>
+<span class="cstat-no" title="statement not covered" >    this.logger = logger;</span>
   }
 &nbsp;
   /**
@@ -942,8 +942,8 @@ class AIHandler {
    * @param {number} fuzzyScore - FuzzySearch confidence score (0-1)
    * @returns {boolean}
    */
-  shouldHandleMessage(message, fuzzyScore = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span> {
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (!this.aiService.isEnabled()) return false;
+<span class="fstat-no" title="function not covered" >  sh</span>ouldHandleMessage(message, fuzzyScore = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span> {
+<span class="cstat-no" title="statement not covered" >    if (!this.aiService.isEnabled()) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
     // Check message length
 <span class="cstat-no" title="statement not covered" >    if (message.length &lt; AI_CONFIG.fallbackTriggers.minMessageLength) {</span>
@@ -1337,7 +1337,7 @@ Return the result as JSON with this structure:
   }
 }
 &nbsp;
-module.exports = AIHandler;
+<span class="cstat-no" title="statement not covered" >module.exports = AIHandler;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1345,7 +1345,7 @@ module.exports = AIHandler;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-05T23:19:35.300Z
+                at 2025-11-06T02:46:42.110Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

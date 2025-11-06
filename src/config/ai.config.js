@@ -20,6 +20,7 @@ const AI_CONFIG = {
     productQA: true,
     recommendations: true,
     adminDescriptionGenerator: true,
+    fallbackHandler: true, // NEW: AI fallback for unrecognized messages
   },
 
   // Rate Limiting

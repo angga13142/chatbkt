@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.39% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/79</span>
+                <span class='fraction'>0/79</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/12</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.84% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/76</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
@@ -348,18 +348,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">95x</span>
-<span class="cline-any cline-yes">95x</span>
-<span class="cline-any cline-yes">95x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">95x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -371,7 +371,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -622,24 +622,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * AIService - Wrapper for Vercel AI SDK with Gemini 2.5 Flash Lite
  * Handles AI completions, tool calling, streaming, error handling, and rate limiting
  */
 &nbsp;
-const { generateText, streamText, tool } = require("ai");
-const { google } = require("@ai-sdk/google");
-const AI_CONFIG = require("../../config/ai.config");
+const { generateText, streamText, tool } = <span class="cstat-no" title="statement not covered" >require("ai");</span>
+const { google } = <span class="cstat-no" title="statement not covered" >require("@ai-sdk/google");</span>
+const AI_CONFIG = <span class="cstat-no" title="statement not covered" >require("../../config/ai.config");</span>
 &nbsp;
 class AIService {
-  constructor(redisClient = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> logger = <span class="branch-0 cbranch-no" title="branch not covered" >console)</span> {
-    this.redisClient = redisClient;
-    this.logger = logger;
-    this.model = google(AI_CONFIG.model.name);
+<span class="fstat-no" title="function not covered" >  co</span>nstructor(redisClient = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> logger = <span class="branch-0 cbranch-no" title="branch not covered" >console)</span> {
+<span class="cstat-no" title="statement not covered" >    this.redisClient = redisClient;</span>
+<span class="cstat-no" title="statement not covered" >    this.logger = logger;</span>
+<span class="cstat-no" title="statement not covered" >    this.model = google(AI_CONFIG.model.name);</span>
 &nbsp;
     // Initialize cost tracking
-    this.costTracker = {
+<span class="cstat-no" title="statement not covered" >    this.costTracker = {</span>
       dailyCalls: 0,
       dailyCost: 0,
       monthlyCost: 0,
@@ -650,8 +650,8 @@ class AIService {
   /**
    * Check if AI features are enabled
    */
-  isEnabled() {
-    return AI_CONFIG.features.enabled;
+<span class="fstat-no" title="function not covered" >  is</span>Enabled() {
+<span class="cstat-no" title="statement not covered" >    return AI_CONFIG.features.enabled;</span>
   }
 &nbsp;
   /**
@@ -902,7 +902,7 @@ class AIService {
   }
 }
 &nbsp;
-module.exports = AIService;
+<span class="cstat-no" title="statement not covered" >module.exports = AIService;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -910,7 +910,7 @@ module.exports = AIService;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-05T23:19:35.300Z
+                at 2025-11-06T02:46:42.110Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

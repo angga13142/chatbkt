@@ -17,13 +17,14 @@ Auto-hide payment methods without credentials from payment menu based on .env co
 
 ```javascript
 // OLD
-enabled: process.env.DANA_ENABLED !== "false"
+enabled: process.env.DANA_ENABLED !== "false";
 
 // NEW
-enabled: process.env.DANA_ENABLED === "true" && !!process.env.DANA_NUMBER
+enabled: process.env.DANA_ENABLED === "true" && !!process.env.DANA_NUMBER;
 ```
 
 **New Methods:**
+
 - `getAvailablePayments()` - Returns only enabled payment methods
 - `getAvailableBanks()` - Returns only enabled banks
 - Xendit enabled check based on `XENDIT_SECRET_KEY`
@@ -42,8 +43,9 @@ paymentMethodSelection(orderId) {
 ```
 
 **New Helper Methods:**
+
 - `getPaymentMethodByIndex(index)` - Get payment by user input
-- `getBankByIndex(index)` - Get bank by user input  
+- `getBankByIndex(index)` - Get bank by user input
 - `getPaymentMethodCount()` - Total available payments
 - `getBankCount()` - Total available banks
 
@@ -66,6 +68,7 @@ switch (paymentMethod.id) {
 ```
 
 **Benefits:**
+
 - Validates against actual available count
 - Error message shows correct range (1-2, 1-3, etc.)
 - No hardcoded bank mappings
@@ -73,9 +76,11 @@ switch (paymentMethod.id) {
 ### 4. Tests
 
 **Updated:**
+
 - `tests/unit/lib/PaymentMessages.test.js` - Dynamic bank test
 
 **New:**
+
 - `tests/unit/lib/DynamicPayment.test.js` - 13 comprehensive tests
   - Payment config validation
   - Dynamic menu generation
@@ -86,11 +91,13 @@ switch (paymentMethod.id) {
 Based on `.env` file:
 
 ✅ **Enabled:**
+
 - QRIS (Xendit configured)
 - DANA (credentials provided)
 - GOPAY (credentials provided)
 
 ❌ **Disabled (no credentials):**
+
 - OVO
 - ShopeePay
 - All banks (BCA, BNI, BRI, Mandiri)
@@ -98,6 +105,7 @@ Based on `.env` file:
 ## User Experience
 
 ### Before
+
 ```
 💳 PILIH METODE PEMBAYARAN
 
@@ -112,6 +120,7 @@ Ketik nomor 1-6
 ```
 
 ### After
+
 ```
 💳 PILIH METODE PEMBAYARAN
 
@@ -133,19 +142,24 @@ Ketik nomor 1-3  ← Dynamic range!
 ### Example Scenarios
 
 **Scenario 1: Only QRIS**
+
 ```env
 XENDIT_SECRET_KEY=xnd_...
 DANA_ENABLED=false
 ```
+
 Result: Shows only 1 payment option (QRIS)
 
 **Scenario 2: No Payment Methods**
+
 ```env
 # All empty or false
 ```
+
 Result: Shows "PAYMENT NOT CONFIGURED" message
 
 **Scenario 3: All Enabled**
+
 ```env
 XENDIT_SECRET_KEY=xnd_...
 DANA_ENABLED=true
@@ -155,26 +169,29 @@ GOPAY_NUMBER=08123...
 BCA_ENABLED=true
 BCA_ACCOUNT=12345...
 ```
+
 Result: Shows QRIS + DANA + GOPAY + Transfer Bank (1-4)
 
 ## Files Modified
 
-| File | Lines Changed | Status |
-|------|---------------|--------|
-| `src/config/payment.config.js` | +63 | Enhanced |
-| `lib/paymentMessages.js` | +50 | Updated |
-| `lib/paymentHandlers.js` | +30 | Updated |
-| `tests/unit/lib/PaymentMessages.test.js` | -4 | Fixed |
-| `tests/unit/lib/DynamicPayment.test.js` | +127 | NEW |
+| File                                     | Lines Changed | Status   |
+| ---------------------------------------- | ------------- | -------- |
+| `src/config/payment.config.js`           | +63           | Enhanced |
+| `lib/paymentMessages.js`                 | +50           | Updated  |
+| `lib/paymentHandlers.js`                 | +30           | Updated  |
+| `tests/unit/lib/PaymentMessages.test.js` | -4            | Fixed    |
+| `tests/unit/lib/DynamicPayment.test.js`  | +127          | NEW      |
 
 ## Testing Results
 
 ✅ **13 new tests passing**
+
 - Payment config validation (5 tests)
 - Dynamic menu generation (5 tests)
 - Edge cases (3 tests)
 
 ✅ **All existing tests passing**
+
 - 0 lint errors
 - No breaking changes
 
