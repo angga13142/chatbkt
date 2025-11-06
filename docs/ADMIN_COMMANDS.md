@@ -170,6 +170,125 @@ BCA_ENABLED=true
 
 ---
 
+### 4b. Product Template Generator (NEW!)
+
+**Command:** `/newproduct`
+
+**Deskripsi:** Quick create product dengan template auto-generated
+
+**Format:**
+
+```
+/newproduct <id> <name> <price> [description]
+```
+
+**Contoh:**
+
+```
+/newproduct canva-pro "Canva Pro" 1.5 "Design tool premium dengan unlimited templates"
+
+/newproduct youtube-premium "YouTube Premium" 2.0
+```
+
+**Fitur:**
+
+- ✅ Auto-create file di `products_data/`
+- ✅ Auto-detect category (premium/vcc)
+- ✅ Auto-refresh catalog
+- ✅ Integrated dengan /refreshproducts
+- ✅ Template terstruktur untuk easy editing
+
+**Output:**
+
+- File: `products_data/<id>.txt`
+- Format: `Email:Password` (satu per baris)
+- Metadata: Auto-added (name, price, stock)
+
+---
+
+### 4c. Product Auto-Refresh (NEW!)
+
+**Deskripsi:** File watcher otomatis untuk perubahan produk
+
+**Fitur:**
+
+- ✅ Watch `products_data/*.txt` secara real-time
+- ✅ Auto-refresh saat file ditambah/diubah/dihapus
+- ✅ Admin notification via WhatsApp
+- ✅ Zero downtime (tidak perlu restart bot)
+
+**Notifikasi:**
+
+- **File Added:** Alert + auto-refresh catalog
+- **File Changed:** Update stock silently
+- **File Deleted:** Remove product + notify admin
+
+**Cara Kerja:**
+
+1. Tambah/edit file di `products_data/`
+2. Bot detect perubahan otomatis
+3. Catalog di-refresh tanpa restart
+4. Admin dapat notifikasi WhatsApp
+
+**Manual Refresh:**
+
+```
+/refreshproducts
+```
+
+---
+
+### 4d. Payment Analytics (NEW!)
+
+**Command:** `/paymentstats [days]`
+
+**Deskripsi:** Statistik metode payment & revenue breakdown
+
+**Format:**
+
+```
+/paymentstats        # Default: 7 hari
+/paymentstats 30     # Custom: 30 hari
+/paymentstats 90     # Custom: 90 hari
+```
+
+**Output:**
+
+```
+💳 PAYMENT ANALYTICS (7 hari)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Payment Method Usage:
+1. QRIS        45% (127 orders)
+2. DANA        28% (79 orders)
+3. BCA         15% (42 orders)
+4. OVO         12% (34 orders)
+
+💰 Revenue by Method:
+QRIS     ████████████ $67.50 (53%)
+DANA     ██████       $35.00 (27%)
+BCA      ████         $18.00 (14%)
+OVO      ██           $7.00  (6%)
+
+✅ Success Rate: 94.2% (267/283)
+📈 Trend: +12% vs last period
+
+💡 Insights:
+• QRIS most popular (45% usage)
+• DANA highest conversion (97%)
+• Consider promoting BCA (low usage)
+```
+
+**Benefits:**
+
+- ✅ Data-driven payment optimization
+- ✅ Identify most/least popular methods
+- ✅ Success rate analysis
+- ✅ Revenue distribution
+- ✅ Trend comparison
+
+---
+
 ### 5. Settings & Konfigurasi
 
 **Command:** `/settings`

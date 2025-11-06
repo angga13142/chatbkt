@@ -3,10 +3,13 @@
  */
 
 const StockAlertService = require('../../../src/services/alerts/StockAlertService');
-const DynamicProductLoader = require('../../../src/services/utils/DynamicProductLoader');
 
 // Mock DynamicProductLoader
-jest.mock('../../../src/utils/DynamicProductLoader');
+jest.mock('../../../src/utils/DynamicProductLoader', () => ({
+  loadProducts: jest.fn()
+}));
+
+const DynamicProductLoader = require('../../../src/utils/DynamicProductLoader');
 
 describe('StockAlertService', () => {
   let service;

@@ -8,6 +8,41 @@ const PaymentMessages = require('../../../lib/paymentMessages');
 
 // Mock dependencies
 jest.mock('../../../lib/paymentMessages');
+
+// Mock payment config (new structure)
+jest.mock('../../../src/config/payment.config', () => ({
+  getAvailablePayments: jest.fn(() => [
+    { id: 'qris', name: 'QRIS (Semua E-Wallet)', emoji: '📱', enabled: true },
+    { id: 'dana', name: 'DANA', emoji: '💳', enabled: true },
+    { id: 'gopay', name: 'GoPay', emoji: '🟢', enabled: true },
+    { id: 'ovo', name: 'OVO', emoji: '🟣', enabled: true },
+    { id: 'shopeepay', name: 'ShopeePay', emoji: '🟠', enabled: true },
+    { id: 'transfer', name: 'Transfer Bank', emoji: '🏦', enabled: true }
+  ]),
+  getAvailableBanks: jest.fn(() => [
+    { code: 'BCA', name: 'Bank BCA', accountNumber: '1234567890', accountName: 'PT Toko Premium' },
+    { code: 'BNI', name: 'Bank BNI', accountNumber: '0987654321', accountName: 'PT Toko Premium' },
+    { code: 'BRI', name: 'Bank BRI', accountNumber: '1111222233', accountName: 'PT Toko Premium' },
+    { code: 'MANDIRI', name: 'Bank Mandiri', accountNumber: '4444555566', accountName: 'PT Toko Premium' }
+  ]),
+  getAvailableEWallets: jest.fn(() => [
+    { code: 'DANA', name: 'DANA', accountNumber: '081234567890', accountName: 'Toko Premium' },
+    { code: 'OVO', name: 'OVO', accountNumber: '081234567892', accountName: 'Toko Premium' },
+    { code: 'GOPAY', name: 'GoPay', accountNumber: '081234567891', accountName: 'Toko Premium' },
+    { code: 'SHOPEEPAY', name: 'ShopeePay', accountNumber: '081234567893', accountName: 'Toko Premium' }
+  ]),
+  getBankByCode: jest.fn((code) => {
+    const banks = {
+      'BCA': { code: 'BCA', name: 'Bank BCA', accountNumber: '1234567890', accountName: 'PT Toko Premium' },
+      'BNI': { code: 'BNI', name: 'Bank BNI', accountNumber: '0987654321', accountName: 'PT Toko Premium' },
+      'BRI': { code: 'BRI', name: 'Bank BRI', accountNumber: '1111222233', accountName: 'PT Toko Premium' },
+      'MANDIRI': { code: 'MANDIRI', name: 'Bank Mandiri', accountNumber: '4444555566', accountName: 'PT Toko Premium' }
+    };
+    return banks[code.toUpperCase()];
+  })
+}));
+
+// Mock old config (for backward compatibility)
 jest.mock('../../../config', () => ({
   systemSettings: {
     paymentAccounts: {
@@ -88,6 +123,55 @@ describe('PaymentHandlers', () => {
     PaymentMessages.manualBankTransferInstructions = jest.fn().mockReturnValue('Bank transfer instructions');
     PaymentMessages.paymentError = jest.fn().mockReturnValue('Payment error message');
     PaymentMessages.invalidBankChoice = jest.fn().mockReturnValue('Invalid bank choice');
+    
+    // Mock dynamic payment method helpers
+    PaymentMessages.getPaymentMethodByIndex = jest.fn((index) => {
+      const methods = [
+        { id: 'qris', name: 'QRIS (Semua E-Wallet)', emoji: '📱' },
+        { id: 'dana', name: 'DANA', emoji: '💳' },
+        { id: 'gopay', name: 'GoPay', emoji: '🟢' },
+        { id: 'ovo', name: 'OVO', emoji: '🟣' },
+        { id: 'shopeepay', name: 'ShopeePay', emoji: '🟠' },
+        { id: 'transfer', name: 'Transfer Bank', emoji: '🏦' }
+      ];
+      
+      // Support both numeric index and keyword
+      const numIndex = parseInt(index);
+      if (!isNaN(numIndex)) {
+        return methods[numIndex - 1] || null;
+      }
+      
+      // Support keywords (qris, dana, gopay, etc.)
+      const keyword = index.toString().toLowerCase();
+      
+      // Special cases: bank/transfer → transfer
+      if (keyword === 'bank' || keyword === 'transfer') {
+        return methods.find(m => m.id === 'transfer') || null;
+      }
+      
+      return methods.find(m => m.id === keyword) || null;
+    });
+    
+    PaymentMessages.getPaymentMethodCount = jest.fn().mockReturnValue(6);
+    PaymentMessages.getBankByIndex = jest.fn((index) => {
+      const banks = [
+        { code: 'BCA', name: 'Bank BCA', accountNumber: '1234567890', accountName: 'PT Toko Premium' },
+        { code: 'BNI', name: 'Bank BNI', accountNumber: '0987654321', accountName: 'PT Toko Premium' },
+        { code: 'BRI', name: 'Bank BRI', accountNumber: '1111222233', accountName: 'PT Toko Premium' },
+        { code: 'MANDIRI', name: 'Bank Mandiri', accountNumber: '4444555566', accountName: 'PT Toko Premium' }
+      ];
+      
+      // Support both numeric index and keyword
+      const numIndex = parseInt(index);
+      if (!isNaN(numIndex)) {
+        return banks[numIndex - 1] || null;
+      }
+      
+      // Support keywords (bca, bni, etc.)
+      const keyword = index.toString().toUpperCase();
+      return banks.find(b => b.code === keyword) || null;
+    });
+    PaymentMessages.getBankCount = jest.fn().mockReturnValue(4);
 
     // Create handler instance
     handler = new PaymentHandlers(mockXenditService, mockSessionManager, mockLogger);

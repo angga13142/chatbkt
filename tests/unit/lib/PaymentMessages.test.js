@@ -5,6 +5,22 @@
 
 const PaymentMessages = require('../../../lib/paymentMessages');
 
+// Mock payment config
+jest.mock('../../../src/config/payment.config', () => ({
+  getAvailableBanks: jest.fn(() => [
+    { code: 'BCA', name: 'Bank BCA', accountNumber: '1234567890', accountName: 'Test Shop' },
+    { code: 'BNI', name: 'Bank BNI', accountNumber: '0987654321', accountName: 'Test Shop' },
+    { code: 'BRI', name: 'Bank BRI', accountNumber: '1122334455', accountName: 'Test Shop' },
+    { code: 'MANDIRI', name: 'Bank Mandiri', accountNumber: '5566778899', accountName: 'Test Shop' }
+  ]),
+  getAvailableEWallets: jest.fn(() => [
+    { code: 'DANA', name: 'DANA', accountNumber: '081234567890' },
+    { code: 'OVO', name: 'OVO', accountNumber: '081234567890' },
+    { code: 'GOPAY', name: 'GoPay', accountNumber: '081234567890' },
+    { code: 'SHOPEEPAY', name: 'ShopeePay', accountNumber: '081234567890' }
+  ])
+}));
+
 describe('PaymentMessages', () => {
   const orderId = 'ORD-123456';
   const totalIDR = 100000;
