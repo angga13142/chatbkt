@@ -84,6 +84,7 @@ class AdminHandler extends BaseHandler {
         this.handleRemoveProduct(adminId, msg),
       "/generate-desc": (adminId, msg) =>
         this.handleGenerateDescription(adminId, msg),
+      "/refreshproducts": (adminId) => this.handleRefreshProducts(adminId),
 
       // Inventory
       "/addstock-bulk": (adminId, msg) =>
@@ -597,6 +598,72 @@ class AdminHandler extends BaseHandler {
   // Promo code methods moved to AdminPromoHandler
 
   /**
+   * /refreshproducts - Reload products from products_data/ folder
+   */
+  handleRefreshProducts(adminId) {
+    try {
+      const productsConfig = require("../config/products.config");
+      const DynamicProductLoader = productsConfig.DynamicProductLoader;
+
+      // Scan for new products
+      const productFiles = DynamicProductLoader.scanProductFiles();
+      const oldProducts = productsConfig.getAllProducts();
+      const oldCount = oldProducts.length;
+
+      // Refresh products
+      productsConfig.refreshProducts();
+      const newProducts = productsConfig.getAllProducts();
+      const newCount = newProducts.length;
+
+      // Find added/removed products
+      const oldIds = new Set(oldProducts.map((p) => p.id));
+      const newIds = new Set(newProducts.map((p) => p.id));
+
+      const added = newProducts.filter((p) => !oldIds.has(p.id));
+      const removed = oldProducts.filter((p) => !newIds.has(p.id));
+
+      let response = "🔄 *Products Refreshed*\n\n";
+      response += `📦 *Total Products:* ${newCount}\n`;
+      response += `📊 *Change:* ${oldCount} → ${newCount} (${newCount - oldCount >= 0 ? "+" : ""}${newCount - oldCount})\n\n`;
+
+      if (added.length > 0) {
+        response += `✅ *Added (${added.length}):*\n`;
+        added.forEach((p) => {
+          response += `• ${p.id} - ${p.name}\n`;
+        });
+        response += "\n";
+      }
+
+      if (removed.length > 0) {
+        response += `❌ *Removed (${removed.length}):*\n`;
+        removed.forEach((p) => {
+          response += `• ${p.id} - ${p.name}\n`;
+        });
+        response += "\n";
+      }
+
+      if (added.length === 0 && removed.length === 0) {
+        response += `✅ No changes detected\n\n`;
+      }
+
+      response += `📁 *Files Scanned:* ${productFiles.length}\n`;
+      response += `⏰ *Updated:* ${new Date().toLocaleString("id-ID")}`;
+
+      this.log(adminId, "products_refreshed", {
+        oldCount,
+        newCount,
+        added: added.length,
+        removed: removed.length,
+      });
+
+      return response;
+    } catch (error) {
+      this.logError(adminId, error, { action: "refresh_products" });
+      return `❌ *Error Refreshing Products*\n\n${error.message}`;
+    }
+  }
+
+  /**
    * Show admin help menu
    */
   showAdminHelp() {
@@ -613,12 +680,13 @@ class AdminHandler extends BaseHandler {
     message += "• /stats [days] - Dashboard analytics (default: 30 hari)\n";
     message += "• /status - Status sistem (RAM, uptime, Redis, logs)\n\n";
 
-    message += "🏷️ *Product Management* (5 commands)\n";
+    message += "🏷️ *Product Management* (6 commands)\n";
     message += "• /stock [id] [qty] - Lihat/update stock produk\n";
     message += "• /addproduct <id|name|price|desc|cat> - Tambah produk baru\n";
     message += "• /editproduct <id> <field> <value> - Edit produk\n";
     message += "• /removeproduct <product-id> - Hapus produk\n";
-    message += "• /generate-desc <product-id> - AI generate deskripsi\n\n";
+    message += "• /generate-desc <product-id> - AI generate deskripsi\n";
+    message += "• /refreshproducts - Reload produk dari folder\n\n";
 
     message += "📦 *Inventory Management* (5 commands)\n";
     message += "• /addstock <id> <credentials> - Tambah 1 credential\n";
@@ -642,7 +710,7 @@ class AdminHandler extends BaseHandler {
     message += "• /settings [key] [value] - Kelola pengaturan bot\n\n";
 
     message += "━━━━━━━━━━━━━━━━━━\n";
-    message += "📝 *Total: 22 Admin Commands*\n\n";
+    message += "📝 *Total: 23 Admin Commands*\n\n";
     message += "💡 Tips:\n";
     message += "• Semua command dimulai dengan /\n";
     message += "• Parameter <wajib> | [opsional]\n";

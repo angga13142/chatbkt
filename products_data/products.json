@@ -1,0 +1,38 @@
+{
+  "netflix": {
+    "name": "Netflix Premium (1 Month)",
+    "price": 15800,
+    "description": "Full HD streaming, 4 screens, offline download",
+    "category": "premium"
+  },
+  "spotify": {
+    "name": "Spotify Premium (1 Month)",
+    "price": 15800,
+    "description": "Ad-free music, unlimited skips, offline mode",
+    "category": "premium"
+  },
+  "youtube": {
+    "name": "YouTube Premium (1 Month)",
+    "price": 15800,
+    "description": "Ad-free videos, background play, YouTube Music",
+    "category": "premium"
+  },
+  "disney": {
+    "name": "Disney+ Premium (1 Month)",
+    "price": 15800,
+    "description": "HD streaming, Marvel, Star Wars, Pixar content",
+    "category": "premium"
+  },
+  "vcc-basic": {
+    "name": "Virtual Card Basic ($10)",
+    "price": 15800,
+    "description": "Pre-loaded $10 balance for online payments",
+    "category": "vcc"
+  },
+  "vcc-standard": {
+    "name": "Virtual Card Standard ($25)",
+    "price": 15800,
+    "description": "Pre-loaded $25 balance for online payments",
+    "category": "vcc"
+  }
+}
